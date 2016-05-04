@@ -9,10 +9,8 @@ import android.view.SurfaceHolder;
 public class GameThread extends Thread {
     boolean gameLoaded;
     GameView gv;
-    int gameState;
-    static final int LOADING = 0;
-    static final int RUNNING = 1;
-    static final int OVER = 2;
+    private GameState gameState;
+    public enum GameState{LOADING, RUNNING, OVER};
 
     public GameThread(GameView gv) {
         this.gv=gv;
@@ -22,7 +20,7 @@ public class GameThread extends Thread {
     public void run() {
         SurfaceHolder sh = gv.getHolder();
         Canvas c;
-        gameState = LOADING;
+        gameState = GameState.LOADING;
         while( !Thread.interrupted() ) {
             if (!gameLoaded){
                 gv.loadGame(1);
@@ -30,7 +28,7 @@ public class GameThread extends Thread {
             }
             switch(gameState){
                 case LOADING:
-                    gameState = RUNNING;
+                    gameState = GameState.RUNNING;
                     break;
                 case RUNNING:
                     c = sh.lockCanvas(null);
@@ -77,7 +75,10 @@ public class GameThread extends Thread {
         }
     }
 
-    public void setGameState(int gameState){
+    public void setGameState(GameState gameState){
         this.gameState = gameState;
+    }
+    public GameState getGameState(){
+        return gameState;
     }
 }

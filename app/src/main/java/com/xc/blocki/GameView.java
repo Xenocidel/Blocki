@@ -2,9 +2,12 @@ package com.xc.blocki;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 /**
  * Created by Aaron on 2016-05-03.
@@ -26,6 +29,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     public void loadGame(int level){
 
+        loadTouchHandler();
+    }
+
+    public void loadTouchHandler(){
+        setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                //todo movement and abilities
+                return true;
+            }
+        });
     }
 
     @Override
@@ -42,14 +56,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        if (gt.gameState == GameThread.RUNNING) {
-
-        }
-        else if (gt.gameState == GameThread.LOADING) {
-
-        }
-        else if (gt.gameState == GameThread.OVER) {
-
+        switch(gt.getGameState()){
+            case RUNNING:
+                canvas.drawColor(Color.LTGRAY);
+                break;
+            case LOADING:
+                break;
+            case OVER:
+                break;
         }
     }
 
