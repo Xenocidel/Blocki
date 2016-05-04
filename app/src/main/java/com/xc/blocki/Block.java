@@ -16,7 +16,9 @@ public abstract class Block {
     int health;
     RectF hitbox;
     State state;
+    Type type;
     public enum State{STOPPED, MOVING, JUMPING};
+    public enum Type{PLAYER, ENEMY, GROUND, ITEM};
 
     public Block(int xPos, int yPos, int xSpeed, int ySpeed, int gravity, int health) {
         x = xPos;
@@ -27,6 +29,9 @@ public abstract class Block {
         this.health = health;
         state = State.STOPPED;
         RectF tmp = new RectF(xPos, yPos, xPos+width, yPos+height);
+    }
+
+    public Block(){
     }
 
     public abstract void update();

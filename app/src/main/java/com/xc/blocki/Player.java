@@ -7,7 +7,7 @@ public class Player extends Block {
 
     public Player(int xPos, int yPos, int xSpeed, int ySpeed, int gravity, int health) {
         super(xPos, yPos, xSpeed, ySpeed, gravity, health);
-
+        type = Type.PLAYER;
     }
 
     @Override

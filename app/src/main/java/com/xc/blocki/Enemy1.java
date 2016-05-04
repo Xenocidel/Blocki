@@ -7,7 +7,7 @@ public class Enemy1 extends Block {
 
     public Enemy1(int xPos, int yPos, int xSpeed, int ySpeed, int gravity, int health) {
         super(xPos, yPos, xSpeed, ySpeed, gravity, health);
-
+        type = Type.ENEMY;
     }
 
     @Override

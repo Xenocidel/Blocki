@@ -9,6 +9,9 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Aaron on 2016-05-03.
  */
@@ -25,9 +28,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     GameThread gt;
     int level=1;
     int score=0;
-    int lives=3;
+    Player player;
+    ArrayList<Block> blocks = new ArrayList<>(); //contains all blocks except player
+
+    public void addBlock(Block block){
+        blocks.add(block);
+    }
+
+    public Block getBlock(int i){
+         return blocks.get(i);
+    }
 
     public void loadGame(int level){
+        player = new Player(getWidth()/15, 0, 10, 10, 3, 3);
 
         loadTouchHandler();
     }
@@ -42,20 +55,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         });
     }
 
-    @Override
-    public void surfaceCreated ( SurfaceHolder holder ) {
-        // Launch animator thread
-        if (!gameLoaded) {
-            gt = new GameThread(this);
-            gt.start();
-            gameLoaded = true;
+    public void update(){
+        player.update();
+        for (Block block : blocks){
+            block.update();
         }
-        Log.d("Load", "surfaceView/Thread");
     }
 
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
+        update();
         switch(gt.getGameState()){
             case RUNNING:
                 canvas.drawColor(Color.LTGRAY);
@@ -65,6 +75,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             case OVER:
                 break;
         }
+    }
+
+    @Override
+    public void surfaceCreated ( SurfaceHolder holder ) {
+        // Launch animator thread
+        if (!gameLoaded) {
+            gt = new GameThread(this);
+            gt.start();
+            gameLoaded = true;
+        }
+        Log.d("Load", "surfaceView/Thread");
     }
 
     @Override
