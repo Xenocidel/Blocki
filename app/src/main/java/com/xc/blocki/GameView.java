@@ -1,8 +1,11 @@
 package com.xc.blocki;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -29,6 +32,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     int level=1;
     int score=0;
     Player player;
+    Background background;
     ArrayList<Block> blocks = new ArrayList<>(); //contains all blocks except player
 
     public void addBlock(Block block){
@@ -40,7 +44,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void loadGame(int level){
-        player = new Player(getWidth()/15, 0, 10, 10, 3, 3);
+        player = new Player(getWidth()/15, 9*getHeight()/10, 10, 10, 3, 3, getWidth(), getHeight(), context);
+        background = new Background(context, getWidth(), getHeight());
 
         loadTouchHandler();
     }
@@ -49,14 +54,29 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                //todo movement and abilities
+                switch(event.getActionMasked()){
+                    case MotionEvent.ACTION_DOWN:
+                        if(event.getX() > getWidth() / 2){
+                            player.setState(Block.State.RIGHT);
+                            background.setMovementState(background.LEFT);
+                        }else{
+                            player.setState(Block.State.LEFT);
+                            background.setMovementState(background.RIGHT);
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        background.setMovementState(background.STOPPED);
+                        player.setState(Block.State.STOPPED);
+                        break;
+                }
                 return true;
             }
         });
     }
 
     public void update(){
-        player.update();
+        player.update(background.backgroundStopped);
+        background.update(player.x);
         for (Block block : blocks){
             block.update();
         }
@@ -69,6 +89,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         switch(gt.getGameState()){
             case RUNNING:
                 canvas.drawColor(Color.LTGRAY);
+                background.draw(canvas);
+                player.draw(canvas);
                 break;
             case LOADING:
                 break;

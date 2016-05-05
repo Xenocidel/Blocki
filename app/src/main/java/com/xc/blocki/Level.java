@@ -55,10 +55,10 @@ public class Level {
                 case ' ':
                     break;
                 case 'g':
-                    gameView.addBlock(new Ground(x*BLOCK_WIDTH, y*BLOCK_HEIGHT));
+                    //gameView.addBlock(new Ground(x*BLOCK_WIDTH, y*BLOCK_HEIGHT));
                     break;
                 case '1':
-                    gameView.addBlock(new Enemy1(x*BLOCK_WIDTH, y*BLOCK_HEIGHT, 5, 5, 5, 1));
+                    //gameView.addBlock(new Enemy1(x*BLOCK_WIDTH, y*BLOCK_HEIGHT, 5, 5, 5, 1));
                     break;
             }
             x++;
