@@ -29,10 +29,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     Context context;
     boolean gameLoaded = false;
     GameThread gt;
-    int level=1;
+    //int gameLevel=1;
     int score=0;
+    Level level;
     Player player;
     Background background;
+    boolean STOPPED;
     ArrayList<Block> blocks = new ArrayList<>(); //contains all blocks except player
 
     public void addBlock(Block block){
@@ -43,9 +45,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
          return blocks.get(i);
     }
 
-    public void loadGame(int level){
-        player = new Player(getWidth()/15, 9*getHeight()/10, 10, 10, 3, 3, getWidth(), getHeight(), context);
-        background = new Background(context, getWidth(), getHeight());
+    public void loadGame(int gameLevel){
+        player = new Player(getWidth()/15, getHeight()/2, 10, 20, 10, 3, getWidth(), getHeight(), context);
+        background = new Background(getWidth(), getHeight(),context);
+        level = new Level(this);
+        level.loadLevel(gameLevel);
 
         loadTouchHandler();
     }
@@ -54,19 +58,36 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                if(event.getY() < getHeight()*3/4){
+                    if(event.getActionMasked() == MotionEvent.ACTION_DOWN){
+                        player.setState(Block.State.JUMPING);
+                    }
+                }
                 switch(event.getActionMasked()){
                     case MotionEvent.ACTION_DOWN:
-                        if(event.getX() > getWidth() / 2){
-                            player.setState(Block.State.RIGHT);
-                            background.setMovementState(background.LEFT);
-                        }else{
-                            player.setState(Block.State.LEFT);
-                            background.setMovementState(background.RIGHT);
+                        if(event.getY() > getHeight()*3/4){
+                            if(event.getX() > getWidth() / 2){
+                                player.setState(Block.State.RIGHT);
+                                background.setState(Block.State.LEFT);
+                                for (Block block : blocks){
+                                    block.setState(Block.State.LEFT);
+                                }
+
+                            }else{
+                                player.setState(Block.State.LEFT);
+                                background.setState(Block.State.RIGHT);
+                                for (Block block : blocks){
+                                    block.setState(Block.State.RIGHT);
+                                }
+                            }
                         }
                         break;
                     case MotionEvent.ACTION_UP:
-                        background.setMovementState(background.STOPPED);
+                        background.setState(Block.State.STOPPED);
                         player.setState(Block.State.STOPPED);
+                        for (Block block : blocks){
+                            block.setState(Block.State.STOPPED);
+                        }
                         break;
                 }
                 return true;
@@ -74,12 +95,20 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         });
     }
 
+
     public void update(){
         player.update(background.backgroundStopped);
-        background.update(player.x);
-        for (Block block : blocks){
-            block.update();
+        if(!STOPPED) {
+            background.update(player.x);
+            for (Block block : blocks) {
+                block.update(player.x);
+                if (block.x <= -2 * getWidth()) {
+                    // if ground touched the bound, background, ground enemy all can't move.
+                    STOPPED = true;
+                }
+            }
         }
+
     }
 
     @Override
@@ -88,9 +117,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         update();
         switch(gt.getGameState()){
             case RUNNING:
-                canvas.drawColor(Color.LTGRAY);
+                //canvas.drawColor(Color.LTGRAY);
                 background.draw(canvas);
                 player.draw(canvas);
+                for (Block block : blocks){
+                    block.draw(canvas);
+                }
                 break;
             case LOADING:
                 break;

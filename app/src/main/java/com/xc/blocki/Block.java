@@ -1,5 +1,6 @@
 package com.xc.blocki;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.RectF;
@@ -18,6 +19,7 @@ public abstract class Block {
     int health;
     int getWidth;
     int getHeight;
+    Context context;
     RectF hitbox;
     State state;
     Type type;
@@ -25,7 +27,8 @@ public abstract class Block {
     public enum State{STOPPED, RIGHT, LEFT, JUMPING};
     public enum Type{PLAYER, ENEMY, GROUND, ITEM};
 
-    public Block(int xPos, int yPos, int xSpeed, int ySpeed, int gravity, int health, int getWidth, int getHeight) {
+    public Block(int xPos, int yPos, int xSpeed, int ySpeed, int gravity, int health,
+                 int getWidth, int getHeight, Context context) {
         x = xPos;
         y = yPos;
         speedX = xSpeed;
@@ -34,6 +37,9 @@ public abstract class Block {
         this.health = health;
         this.getWidth = getWidth;
         this.getHeight = getHeight;
+        this.width = getWidth/10;
+        this.height = getHeight/6;
+        this.context = context;
         state = State.STOPPED;
         RectF tmp = new RectF(xPos, yPos, xPos+width, yPos+height);
     }
@@ -44,7 +50,7 @@ public abstract class Block {
     public abstract void setState(State state);
 
     public abstract void update();
-    public abstract void update(boolean backgroundStopped);
+    public abstract void update(int i);
     public abstract void draw(Canvas canvas);
 
 }

@@ -1,6 +1,7 @@
 package com.xc.blocki;
 
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 /**
@@ -35,7 +36,7 @@ public class GameThread extends Thread {
                     try {
                         synchronized (sh) {
                             gv.draw(c);
-                            //Log.d("Draw", "Frame Complete");
+                            Log.d("Draw", "Frame Complete");
                         }
                     } catch (Exception e) {
                     } finally {

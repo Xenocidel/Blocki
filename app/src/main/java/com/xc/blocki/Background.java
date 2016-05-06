@@ -9,41 +9,40 @@ import android.graphics.Paint;
 /**
  * Created by LiangYenChun on 5/4/2016.
  */
-public class Background {
-    Bitmap background;
-    int x, y;
-    int getWidth, getHeight;
-    final int STOPPED = 0;
-    final int LEFT = 1;
-    final int RIGHT = 2;
-    int backgroundMoving;
+public class Background extends Block {
+
     boolean backgroundStopped;
 
-    public Background(Context context, int getWidth, int getHeight){
-        Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.background3);
-        background =  Bitmap.createScaledBitmap(tmp, getWidth*3, getHeight, false);
-        x = 0;
-        y = 0;
-        this.getHeight = getHeight;
-        this.getWidth = getWidth;
+    public Background(int getWidth, int getHeight, Context context){
+        super(0, 0, 0, 0, 0, 0, getWidth, getHeight, context);
+        Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.background2);
+        bitmap =  Bitmap.createScaledBitmap(tmp, getWidth*3, getHeight, false);
         backgroundStopped = true;
     }
 
-    public void setMovementState(int state){
-        backgroundMoving = state;
+    @Override
+    public void setState(State state) {
+        this.state = state;
     }
 
+    @Override
+    public void update() {
+
+    }
+    @Override
     public void update(int playerX){
-        if(playerX >= getWidth/2) {
+        //If player at quarter screen, background can move.
+        //If background touches the end, it can not go back.
+        if(playerX >= getWidth/4) {
             backgroundStopped = false;
-            if (backgroundMoving == LEFT) {
+            if (state == state.LEFT) {
                 x -= 10;
-                if(x < -getWidth){
-                    x = -getWidth;
+                if(x <= -2*getWidth){
+                    x = -2*getWidth;
                     backgroundStopped =true;
                 }
             }
-            if (backgroundMoving == RIGHT) {
+            if (state == state.RIGHT) {
                 x += 10;
                 if(x >= 0){
                     x = 0;
@@ -53,7 +52,8 @@ public class Background {
         }
     }
 
+    @Override
     public void draw(Canvas canvas){
-        canvas.drawBitmap(background, x, y, null);
+        canvas.drawBitmap(bitmap, x, y, null);
     }
 }
