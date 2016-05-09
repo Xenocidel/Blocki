@@ -5,6 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.provider.Settings;
+import android.util.Log;
+import android.view.SurfaceView;
 
 /**
  * Created by LiangYenChun on 5/4/2016.
@@ -12,11 +15,14 @@ import android.graphics.Paint;
 public class Background extends Block {
 
     boolean backgroundStopped;
+    GameView gameView;
 
-    public Background(int getWidth, int getHeight, Context context){
+
+    public Background(int getWidth, int getHeight, Context context, GameView gameView){
         super(0, 0, 0, 0, 0, 0, getWidth, getHeight, context);
+        this.gameView = gameView;
         Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.background2);
-        bitmap =  Bitmap.createScaledBitmap(tmp, getWidth*3, getHeight, false);
+        bitmap =  Bitmap.createScaledBitmap(tmp, gameView.endX, getHeight, false);
         backgroundStopped = true;
     }
 
@@ -29,7 +35,7 @@ public class Background extends Block {
     public void update() {
 
     }
-    @Override
+
     public void update(int playerX){
         //If player at quarter screen, background can move.
         //If background touches the end, it can not go back.
@@ -37,8 +43,8 @@ public class Background extends Block {
             backgroundStopped = false;
             if (state == state.LEFT) {
                 x -= 10;
-                if(x <= -2*getWidth){
-                    x = -2*getWidth;
+                if(x <= -(gameView.endX - gameView.getWidth())){
+                    x = -(gameView.endX - gameView.getWidth());
                     backgroundStopped =true;
                 }
             }

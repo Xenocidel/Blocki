@@ -38,6 +38,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     Background background;
     boolean STOPPED;
     int endX; //rightmost position in game coordinates
+    boolean fullScreen; // if endX > getWidth, fullScreen is true;
     ArrayList<Block> blocks = new ArrayList<>(); //contains all blocks except player
     //GregorianCalendar cal = new GregorianCalendar();
 
@@ -51,9 +52,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     public void loadGame(int gameLevel){
         player = new Player(50, getHeight()/2, 10, 30, 10, 3, getWidth(), getHeight(), context, this);
-        background = new Background(getWidth(), getHeight(),context);
         level = new Level(this);
         level.loadLevel(gameLevel);
+        background = new Background(getWidth(), getHeight(),context, this);
+        Log.d("gameView.endX = ", String.valueOf(endX));
+
 
         loadTouchHandler();
     }
@@ -103,11 +106,20 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     public void update(){
         player.update(background.backgroundStopped);
+        if(endX > getWidth()){
+            fullScreen = true;
+        }else{
+            fullScreen = false;
+            STOPPED = true;
+        }
         if(!STOPPED) {
             background.update(player.x);
+            if(background.x < -(endX - getWidth())){
+                STOPPED = true;
+            }
             for (Block block : blocks) {
                 block.update(player.x);
-                if (block.x <= -2 * getWidth()) {
+                if (block.x <= -(endX - getWidth())) {
                     // if ground touched the bound, background, ground enemy all can't move.
                     STOPPED = true;
                 }

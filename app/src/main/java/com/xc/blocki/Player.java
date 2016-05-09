@@ -55,8 +55,14 @@ public class Player extends Block {
             if (gameCoordX >= gameView.endX - width) {
                 gameCoordX = gameView.endX - width;
             }
-            if (x >= gameView.endX - width) {
-                x = gameView.endX - width;
+            if(gameView.fullScreen){
+                if ( x > getWidth - width){
+                    x = getWidth - width;
+                }
+            }else{
+                if (x >= gameView.endX - width) {
+                    x = gameView.endX - width;
+                }
             }
         }
         if (y + height >= getHeight - height) { //hardcoded ground level
