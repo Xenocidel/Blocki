@@ -37,47 +37,37 @@ public class Player extends Block {
 
     }
     public void update(boolean backgroundStopped) {
-        if (!obstacle) {
-            if (state == State.LEFT) {
-                if (backgroundStopped)
-                    x -= speedX;
-                gameCoordX -= speedX;
-                if (gameCoordX <= 0) {
-                    gameCoordX = 0;
-                }
-                if (x <= 0) {
-                    x = 0;
-                }
+        if (state == State.LEFT) {
+            if (backgroundStopped)
+                x -= speedX;
+            gameCoordX -= speedX;
+            if (gameCoordX <= 0) {
+                gameCoordX = 0;
             }
-            if (state == State.RIGHT) {
-                if (backgroundStopped)
-                    x += speedX;
-                gameCoordX += speedX;
-                if (gameCoordX >= gameView.endX - width) {
-                    gameCoordX = gameView.endX - width;
-                }
-                if (x >= gameView.endX - width) {
-                    x = gameView.endX - width;
-                }
+            if (x <= 0) {
+                x = 0;
             }
         }
-        if(state == State.JUMPING){ //todo: implement check intersect here
-            y -= speedY;
-            setState(State.STOPPED);
-        /*if(y <= 0)
-            y = 0;*/ //player can go through ceiling or not?
+        if (state == State.RIGHT) {
+            if (backgroundStopped)
+                x += speedX;
+            gameCoordX += speedX;
+            if (gameCoordX >= gameView.endX - width) {
+                gameCoordX = gameView.endX - width;
+            }
+            if (x >= gameView.endX - width) {
+                x = gameView.endX - width;
+            }
+        }
+        if (y + height >= getHeight - height) { //hardcoded ground level
+            y = getHeight - 2*height;
+        }
+        else {
+            y += gravity;
         }
         hitbox.set(gameCoordX, y, gameCoordX+width, y+height);
-        checkIntersect();
-        if (!onGround) { //falling state
-            if (y + height >= getHeight) {
-                y = getHeight - height;
-            }
-            else {
-                y += gravity;
-            }
-        }
-        Log.i("Player", hitbox.toShortString());
+        //}
+        //Log.i("Player", hitbox.toShortString());
     }
 
     public void checkIntersect(){ //todo: fix side obstacle detection

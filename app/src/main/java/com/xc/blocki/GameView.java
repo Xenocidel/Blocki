@@ -64,7 +64,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getY() < getHeight()*3/4){
                     if(event.getActionMasked() == MotionEvent.ACTION_DOWN){
-                        player.setState(Block.State.JUMPING);
+                        //player.setState(Block.State.JUMPING);
+
                     }
                 }
                 switch(event.getActionMasked()){
