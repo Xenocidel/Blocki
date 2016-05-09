@@ -19,18 +19,24 @@ public class Level {
     public String createLevel(int level){
         switch(level){
             case 1:
-                return  "          gg   1             \n"+
+                return  "     \n"+
+                        "     \n"+
+                        "     \n"+
+                        "     \n"+
+                        "    g\n"+
+                        "ggggg";
+                /*return  "          gg   1             \n"+
                         "     1         gg            \n"+
                         "     g            gg        \n"+
                         "   g g    g     g      g    \n"+
                         "  gg g   ggg 1  g   1  g  11\n"+
-                        "gggggggggggggggggggggggggggggg";
+                        "gggggggggggggggggggggggggggggg";*/
             case 2:
-                return  "                                                  \n"+
-                        "                                                  \n"+
-                        "                                gg                \n"+
-                        "g                  1           ggg                \n"+
-                        "g     1    1     gggg         gggg   1   1 1  1 1 \n"+
+                return  "g       g                                         \n"+
+                        "g       g                                         \n"+
+                        "g    g gg                       gg                \n"+
+                        "g   gg gg    gg                ggg                \n"+
+                        "g  ggg     1   g1   1         gggg   1   1 1  1 1 \n"+
                         "gggggggggggggggggggggggggggggggggggggggggggggggggg\n";
             case 3:
                 return  "                                                  \n"+
@@ -52,6 +58,7 @@ public class Level {
             switch (tmp){
                 case '\n':
                     y++;
+                    gameView.endX = (x+1)*BLOCK_WIDTH;
                     x=0;
                     break;
                 case ' ':

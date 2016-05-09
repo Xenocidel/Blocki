@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.RectF;
+import android.util.Log;
 
 /**
  * Created by Aaron on 2016-05-03.
@@ -17,18 +18,26 @@ public abstract class Block {
     int speedY;
     int gravity;
     int health;
-    int getWidth;
+    int getWidth; //screen width
     int getHeight;
+    boolean obstacle;
     Context context;
+    GameView gameView;
     RectF hitbox;
     State state;
     Type type;
     Bitmap bitmap;
     public enum State{STOPPED, RIGHT, LEFT, JUMPING};
+    public boolean onGround;
     public enum Type{PLAYER, ENEMY, GROUND, ITEM};
 
     public Block(int xPos, int yPos, int xSpeed, int ySpeed, int gravity, int health,
                  int getWidth, int getHeight, Context context) {
+        this(xPos, yPos, xSpeed, ySpeed, gravity, health, getWidth, getHeight, context, null);
+    }
+
+    public Block(int xPos, int yPos, int xSpeed, int ySpeed, int gravity, int health,
+                 int getWidth, int getHeight, Context context, GameView gameView) {
         x = xPos;
         y = yPos;
         speedX = xSpeed;
@@ -41,7 +50,8 @@ public abstract class Block {
         this.height = getHeight/6;
         this.context = context;
         state = State.STOPPED;
-        RectF tmp = new RectF(xPos, yPos, xPos+width, yPos+height);
+        this.gameView = gameView;
+        hitbox = new RectF(xPos, yPos, xPos+width, yPos+height);
     }
 
     public Block(){

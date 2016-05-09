@@ -13,6 +13,8 @@ import android.view.SurfaceView;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -35,7 +37,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     Player player;
     Background background;
     boolean STOPPED;
+    int endX; //rightmost position in game coordinates
     ArrayList<Block> blocks = new ArrayList<>(); //contains all blocks except player
+    //GregorianCalendar cal = new GregorianCalendar();
 
     public void addBlock(Block block){
         blocks.add(block);
@@ -46,7 +50,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void loadGame(int gameLevel){
-        player = new Player(getWidth()/15, getHeight()/2, 10, 20, 10, 3, getWidth(), getHeight(), context);
+        player = new Player(50, getHeight()/2, 10, 30, 10, 3, getWidth(), getHeight(), context, this);
         background = new Background(getWidth(), getHeight(),context);
         level = new Level(this);
         level.loadLevel(gameLevel);

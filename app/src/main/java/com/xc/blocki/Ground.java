@@ -28,6 +28,7 @@ public class Ground extends Block {
         type = Type.GROUND;
         Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.ground);
         bitmap =  Bitmap.createScaledBitmap(tmp, width, height, false);
+        Log.i("Ground", hitbox.toShortString());
     }
 
     @Override
@@ -40,10 +41,10 @@ public class Ground extends Block {
         //If player at quarter screen, ground can move.
         //If ground touches the end, it can not go back.
         if(playerX >= getWidth/4) {
-            if (state == state.LEFT) {
+            if (state == State.LEFT) {
                 x -= 10;
             }
-            if (state == state.RIGHT) {
+            if (state == State.RIGHT) {
                 x += 10;
             }
         }
