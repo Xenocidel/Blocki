@@ -12,19 +12,28 @@ import android.util.Log;
  */
 public class Player extends Block {
     boolean playerMiddle;
-    Bitmap shooting;
+    Bitmap shootRight;
+    Bitmap shootLeft;
+    Bitmap idleRight;
+    Bitmap idleLeft;
     int drawShooting;
+    boolean facingRight;
     //int gameCoordX; //variable x is in terms of camera coordinates
 
     public Player(int xPos, int yPos, int xSpeed, int ySpeed, int gravity, int health,
                   int getWidth, int getHeight, Context context, GameView gameView) {
         super(xPos, yPos, xSpeed, ySpeed, gravity, health, getWidth, getHeight,context, gameView);
         type = Type.PLAYER;
-        Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.player);
-        bitmap =  Bitmap.createScaledBitmap(tmp, width, height, false);
-        tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.player_shoot);
-        shooting =  Bitmap.createScaledBitmap(tmp, width, height, false);
+        Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.player_left);
+        idleLeft = Bitmap.createScaledBitmap(tmp, width, height, false);
+        tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.shoot_left);
+        shootLeft = Bitmap.createScaledBitmap(tmp, width, height, false);
+        tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.player_right);
+        idleRight = Bitmap.createScaledBitmap(tmp, width, height, false);
+        tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.shoot_right);
+        shootRight = Bitmap.createScaledBitmap(tmp, width, height, false);
         drawShooting = 0;
+        facingRight = true;
         //gameCoordX = xPos;
     }
 
@@ -53,6 +62,7 @@ public class Player extends Block {
             if (x <= 0) {
                 x = 0;
             }
+            facingRight = false;
         }
         if (state == State.RIGHT) {
             if (backgroundStopped)
@@ -64,6 +74,7 @@ public class Player extends Block {
             if (x >= gameView.endX - width) {
                 x = gameView.endX - width;
             }
+            facingRight = true;
         }
         if (y + height >= getHeight - height) { //hardcoded ground level
             y = getHeight - 2*height;
@@ -91,10 +102,20 @@ public class Player extends Block {
     @Override
     public void draw(Canvas canvas) {
         if (drawShooting-- > 0){
-            canvas.drawBitmap(shooting, x, y, null);
+            if (facingRight) {
+                canvas.drawBitmap(shootRight, x, y, null);
+            }
+            else{
+                canvas.drawBitmap(shootLeft, x, y, null);
+            }
         }
         else {
-            canvas.drawBitmap(bitmap, x, y, null);
+            if (facingRight) {
+                canvas.drawBitmap(idleRight, x, y, null);
+            }
+            else{
+                canvas.drawBitmap(idleLeft, x, y, null);
+            }
         }
         //Log.d("player", "Draw");
     }

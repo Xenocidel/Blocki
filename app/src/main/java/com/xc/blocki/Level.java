@@ -19,12 +19,12 @@ public class Level {
     public String createLevel(int level){
         switch(level){
             case 1:
-                return  "     \n"+
-                        "     \n"+
-                        "     \n"+
-                        "     \n"+
-                        "    g\n"+
-                        "ggggg\n";
+                return  "                                    \n"+
+                        "                                    \n"+
+                        "                                    \n"+
+                        "                                    \n"+
+                        "    g                               \n"+
+                        "gggggggggggggggggggggggggggggggggggg\n";
             case 2:
                 return  "          gg   1  \n"+
                         "     gg           \n"+

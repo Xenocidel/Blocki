@@ -40,7 +40,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     int endX; //rightmost position in game coordinates
     ArrayList<Block> blocks = new ArrayList<>(); //contains all blocks except player
     Bullet[] bullet = new Bullet[10];
-    int maxNumOfBullet = 5; // you can set the maximum number of bullets
+    int maxNumOfBullet = 10; // you can set the maximum number of bullets
     int numOfBullet = 0;
     //GregorianCalendar cal = new GregorianCalendar();
 
@@ -54,12 +54,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     public void loadGame(int gameLevel){
         player = new Player(50, getHeight()/2, 10, 30, 10, 3, getWidth(), getHeight(), context, this);
-        background = new Background(getWidth(), getHeight(),context);
         level = new Level(this);
         level.loadLevel(gameLevel);
+        background = new Background(getWidth(), getHeight(),context, this);
         //bullet creation
         for(int i=0; i<maxNumOfBullet; i++) {
-            bullet[numOfBullet] = new Bullet(this.context, getWidth(), getHeight(), player.hitbox.centerX(), player.hitbox.centerY());
+            bullet[numOfBullet] = new Bullet(this.context, getWidth(), getHeight(), player.hitbox.right, player.hitbox.centerY());
             numOfBullet++;
         }
 
@@ -75,8 +75,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 if (event.getY() < getHeight() * 3 / 4) {
                     if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                         for (int x = 0; x < maxNumOfBullet; x++) {
-                            if (!bullet[x].isShooting) {
-                                bullet[x].setShooting(true);
+                            if (!bullet[x].isShooting && bullet[x].getX() < getWidth() && bullet[x].getX() > 0) { //prevent bug with bullet being launched from offscreen
+                                bullet[x].setShooting(true, player.facingRight);
                                 Log.i("Bullet", bullet[x].getX()+","+bullet[x].getY());
                                 player.drawShooting = 5;
                                 break;
@@ -190,7 +190,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             //collisionDetection();
             //bullet[] update
             for (int i = 0; i < numOfBullet; i++) {
-                bullet[i].update(player.hitbox.centerX(), player.hitbox.centerY()-bullet[i].bulletHeight);
+                //variable xi used here for the initial location of the bullet
+                if (player.facingRight){
+                    bullet[i].xi = player.hitbox.right;
+                }
+                else{
+                    bullet[i].xi = player.hitbox.left - bullet[i].bulletWidth;
+                }
+                bullet[i].update(bullet[i].xi, player.hitbox.centerY()-bullet[i].bulletHeight, player.facingRight);
             }
         }
 
@@ -248,7 +255,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             }
         }
     }*/
-    Paint p = new Paint(); //debug
+    Paint p = new Paint(); //for debug
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
@@ -260,7 +267,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 player.draw(canvas);
                 p.setAlpha(128);
                 p.setColor(Color.GREEN);
-                canvas.drawRect(player.hitbox, p); //debug
+                //canvas.drawRect(player.hitbox, p); //for debug
                 for (Block block : blocks){
                     block.draw(canvas);
                 }

@@ -24,10 +24,11 @@ public class Bullet {
     Bitmap bitmapBullet;
     boolean isShooting;
     boolean isAlive;
+    boolean right;
 
     public Bullet(Context context, int width, int height, float xPosition, float yPosition) {
         Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet);
-        bulletWidth = width/25;
+        bulletWidth = width/30;
         bulletHeight = bulletWidth;
         bitmapBullet = Bitmap.createScaledBitmap(tmp, bulletWidth, bulletHeight, false);
         vx = 15;
@@ -50,13 +51,25 @@ public class Bullet {
         }
     }
 
-    public void update(float xPosition, float yPosition){
+    // @param xPosition and yPosition keeps track of the player's (gun) current position
+    // @param curRight is used when the bullet collides, can be moved to bullet collisionDetection
+    public void update(float xPosition, float yPosition, boolean curRight){
         y = yPosition;
         if (isShooting) {
             float tmpX;
-            tmpX = x + vx;
-            if (tmpX > width || (!isAlive)) { //isAlive is linked to collision detection, which is in GameView's update()
-                setShooting(false);
+            if (right) {
+                tmpX = x + vx;
+                if (tmpX > width || (!isAlive)) { //isAlive is linked to collision detection, which is in GameView's update()
+                    x = xPosition;
+                    setShooting(false, curRight);
+                }
+            }
+            else{
+                tmpX = x - vx;
+                if (tmpX < 0 || (!isAlive)) { //isAlive is linked to collision detection, which is in GameView's update()
+                    x = xPosition;
+                    setShooting(false, curRight);
+                }
             }
             x = tmpX;
         }
@@ -65,9 +78,10 @@ public class Bullet {
             isAlive = true;
         }
     }
-
-    public void setShooting(boolean shooting){
+    // boolean right indicates whether the shot was taken when the player was facing right
+    public void setShooting(boolean shooting, boolean right){
         isShooting = shooting;
+        this.right = right;
     }
 
     public float getX(){return x;}
