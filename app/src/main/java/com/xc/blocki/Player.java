@@ -12,7 +12,9 @@ import android.util.Log;
  */
 public class Player extends Block {
     boolean playerMiddle;
-    int gameCoordX; //variable x is in terms of camera coordinates
+    Bitmap shooting;
+    int drawShooting;
+    //int gameCoordX; //variable x is in terms of camera coordinates
 
     public Player(int xPos, int yPos, int xSpeed, int ySpeed, int gravity, int health,
                   int getWidth, int getHeight, Context context, GameView gameView) {
@@ -20,7 +22,10 @@ public class Player extends Block {
         type = Type.PLAYER;
         Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.player);
         bitmap =  Bitmap.createScaledBitmap(tmp, width, height, false);
-        gameCoordX = xPos;
+        tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.player_shoot);
+        shooting =  Bitmap.createScaledBitmap(tmp, width, height, false);
+        drawShooting = 0;
+        //gameCoordX = xPos;
     }
 
     @Override
@@ -37,13 +42,14 @@ public class Player extends Block {
 
     }
     public void update(boolean backgroundStopped) {
+        Log.i("Player", hitbox.toShortString());
         if (state == State.LEFT) {
             if (backgroundStopped)
                 x -= speedX;
-            gameCoordX -= speedX;
+            /*gameCoordX -= speedX;
             if (gameCoordX <= 0) {
                 gameCoordX = 0;
-            }
+            }*/
             if (x <= 0) {
                 x = 0;
             }
@@ -51,10 +57,10 @@ public class Player extends Block {
         if (state == State.RIGHT) {
             if (backgroundStopped)
                 x += speedX;
-            gameCoordX += speedX;
+            /*gameCoordX += speedX;
             if (gameCoordX >= gameView.endX - width) {
                 gameCoordX = gameView.endX - width;
-            }
+            }*/
             if (x >= gameView.endX - width) {
                 x = gameView.endX - width;
             }
@@ -65,45 +71,31 @@ public class Player extends Block {
         else {
             y += gravity;
         }
-        hitbox.set(gameCoordX, y, gameCoordX+width, y+height);
+        hitbox.set(x, y, x+width, y+height);
         //}
         //Log.i("Player", hitbox.toShortString());
     }
 
-    public void checkIntersect(){ //todo: fix side obstacle detection
-        boolean tmp = false;
-        for (Block i : gameView.blocks){
-            if (((i.hitbox.left - hitbox.right <= 0) && (i.hitbox.left - hitbox.right >= -width) && (hitbox.bottom == i.hitbox.top))){
-                //calculating if the two blocks are touching along the bottom edge
-                //block below player
-                onGround = true;
-                tmp = true;
-                break;
-            }
-            if ((i.hitbox.top - hitbox.bottom <= 0) && (i.hitbox.top - hitbox.bottom >= -height) && ((hitbox.left == i.hitbox.right) || (hitbox.right == i.hitbox.left))){
-                //calculating if two blocks are touching along either side
-                /*if (!onGround){
-                    setState(State.JUMPING); //hit a block while moving and falling
-                    obstacle = true;
-                }*/
-                //else{
-                    setState(State.STOPPED); //hit a block while moving on the ground
-                    obstacle = true;
-                    Log.i("Player", "obstacle");
-                //}
-            }
-            else{
-                obstacle = false;
-            }
-        }
-        if (!tmp){
-            onGround = false;
-        }
+    public void checkIntersect(){
+
+    }
+
+    public float getX(){
+        return x;
+    }
+
+    public float getY(){
+        return y;
     }
 
     @Override
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(bitmap, x, y, null);
+        if (drawShooting-- > 0){
+            canvas.drawBitmap(shooting, x, y, null);
+        }
+        else {
+            canvas.drawBitmap(bitmap, x, y, null);
+        }
         //Log.d("player", "Draw");
     }
 }
