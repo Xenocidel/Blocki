@@ -24,20 +24,21 @@ public class Level {
                         "     \n"+
                         "     \n"+
                         "    g\n"+
-                        "ggggg";
-                /*return  "          gg   1             \n"+
-                        "     1         gg            \n"+
-                        "     g            gg        \n"+
-                        "   g g    g     g      g    \n"+
-                        "  gg g   ggg 1  g   1  g  11\n"+
-                        "gggggggggggggggggggggggggggggg";*/
+                        "ggggg\n";
             case 2:
+                return  "          gg   1  \n"+
+                        "     gg           \n"+
+                        "        gg        \n"+
+                        "  g g    g        \n"+
+                        "   1  g   1  g  11\n"+
+                        "gggggggggggggggggg\n";
+            /*case 2:
                 return  "g       g                                         \n"+
                         "g       g                                         \n"+
                         "g    g gg                       gg                \n"+
                         "g   gg gg    gg                ggg                \n"+
                         "g  ggg     1   g1   1         gggg   1   1 1  1 1 \n"+
-                        "gggggggggggggggggggggggggggggggggggggggggggggggggg\n";
+                        "gggggggggggggggggggggggggggggggggggggggggggggggggg\n";*/
             case 3:
                 return  "                                                  \n"+
                         "                                                  \n"+
