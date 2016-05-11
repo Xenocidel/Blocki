@@ -23,7 +23,7 @@ public class Player extends Block {
                   int getWidth, int getHeight, Context context, GameView gameView) {
         super(xPos, yPos, xSpeed, ySpeed, gravity, health, getWidth, getHeight,context, gameView);
         type = Type.PLAYER;
-        health = 1;
+        //health = 1;
         Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.player_left);
         idleLeft = Bitmap.createScaledBitmap(tmp, width, height, false);
         tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.shoot_left);
@@ -51,7 +51,7 @@ public class Player extends Block {
         if (!isAlive){
             gameView.gt.setGameState(GameThread.GameState.OVER);
         }
-        if (state == state.LEFT) {
+        if (state == State.LEFT) {
             if(gameView.STOPPED) {
                 x -= speedX;
             }
@@ -82,9 +82,20 @@ public class Player extends Block {
     }
 
     public void collisionDetection(){
+        RectF tmp;
+        switch(state){
+            case RIGHT:
+                tmp = new RectF(x+10, y, x+10+width, y+height);
+                break;
+            case LEFT:
+                tmp = new RectF(x-10, y, x-10+width, y+height);
+                break;
+            default:
+                tmp = hitbox;
+        }
         blockLoop:
         for (Block i : gameView.blocks){
-            if (RectF.intersects(hitbox, i.hitbox)){
+            if (RectF.intersects(tmp, i.hitbox)){
                 switch (i.type){
                     case ENEMY:
                         //for now player dies immediately upon hitting an enemy
@@ -93,7 +104,6 @@ public class Player extends Block {
                     case GROUND:
                         //player cannot move and stops
                         setState(State.STOPPED);
-                        x--;
                         gameView.STOPPED=true;
                         break;
                     case ITEM:
