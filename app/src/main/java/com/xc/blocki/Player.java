@@ -72,7 +72,7 @@ public class Player extends Block {
         if(x >= getWidth/4 && backgroundX == 0) {
             gameView.STOPPED = false;
         }
-        if (state != State.STOPPED) {
+        if (state == State.FALLING) {
             y += gravity;
         }
         hitbox.set(x, y, x+width, y+height);
@@ -80,6 +80,7 @@ public class Player extends Block {
 
     public void collisionDetection(){
         RectF tmp;
+        boolean fallingCheck = false;
         switch(state){
             case RIGHT:
                 tmp = new RectF(x+speedX, y, x+speedX+width, y+height);
@@ -87,8 +88,9 @@ public class Player extends Block {
             case LEFT:
                 tmp = new RectF(x-speedX, y, x-speedX+width, y+height);
                 break;
-            case STOPPED:
+            case FALLING:
                 tmp = new RectF(x, y-gravity, x+width, y-gravity+height);
+                fallingCheck = true;
                 break;
             default:
                 tmp = hitbox;
@@ -108,7 +110,9 @@ public class Player extends Block {
                         //player cannot move and stops
                         setState(State.STOPPED);
                         gameView.STOPPED=true;
-                        intersectsSomething = true;
+                        if (!fallingCheck){
+                            intersectsSomething = true;
+                        }
                         break;
                     case ITEM:
                         if (i instanceof FinishLine){
@@ -121,7 +125,7 @@ public class Player extends Block {
                 }
             }
         }
-        if (!intersectsSomething && state == State.STOPPED){ //if nothing intersects the player bottom - gravity, it is falling
+        if (!intersectsSomething && state == State.STOPPED){
             setState(State.FALLING);
         }
     }
