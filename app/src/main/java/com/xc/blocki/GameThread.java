@@ -10,12 +10,14 @@ import android.view.SurfaceHolder;
 public class GameThread extends Thread {
     boolean gameLoaded;
     GameView gv;
+    int level;
     private GameState gameState;
     public enum GameState{LOADING, RUNNING, OVER};
 
     public GameThread(GameView gv) {
         this.gv=gv;
         gameLoaded = false;
+        level = 1;
     }
 
     public void run() {
@@ -24,7 +26,7 @@ public class GameThread extends Thread {
         gameState = GameState.LOADING;
         while( !Thread.interrupted() ) {
             if (!gameLoaded){
-                gv.loadGame(1);
+                gv.loadGame(level);
                 gameLoaded = true;
             }
             switch(gameState){

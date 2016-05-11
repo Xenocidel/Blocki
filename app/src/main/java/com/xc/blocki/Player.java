@@ -18,7 +18,6 @@ public class Player extends Block {
     Bitmap idleLeft;
     int drawShooting;
     boolean facingRight;
-    //int gameCoordX; //variable x is in terms of camera coordinates
 
     public Player(int xPos, int yPos, int xSpeed, int ySpeed, int gravity, int health,
                   int getWidth, int getHeight, Context context, GameView gameView) {
@@ -35,7 +34,6 @@ public class Player extends Block {
         shootRight = Bitmap.createScaledBitmap(tmp, width, height, false);
         drawShooting = 0;
         facingRight = true;
-        //gameCoordX = xPos;
     }
 
     @Override
@@ -53,7 +51,6 @@ public class Player extends Block {
         if (!isAlive){
             gameView.gt.setGameState(GameThread.GameState.OVER);
         }
-        //Log.i("Player", hitbox.toShortString());
         if (state == state.LEFT) {
             if(gameView.STOPPED) {
                 x -= speedX;
@@ -82,8 +79,6 @@ public class Player extends Block {
             y += gravity;
         }
         hitbox.set(x, y, x+width, y+height);
-        //}
-        //Log.i("Player", hitbox.toShortString());
     }
 
     public void collisionDetection(){
@@ -102,7 +97,11 @@ public class Player extends Block {
                         gameView.STOPPED=true;
                         break;
                     case ITEM:
-                        //todo: items not yet implemented
+                        if (i instanceof FinishLine){
+                            gameView.gt.setGameState(GameThread.GameState.LOADING);
+                            gameView.gt.gameLoaded = false;
+                            break blockLoop;
+                        }
                         break;
                 }
             }

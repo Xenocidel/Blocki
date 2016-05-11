@@ -33,7 +33,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     Context context;
     boolean gameLoaded = false;
     GameThread gt;
-    //int gameLevel=1;
     int score=0;
     String scoreText;
     Level level;
@@ -41,12 +40,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     Background background;
     boolean STOPPED = true;
     int endX; //rightmost position in game coordinates
-    ArrayList<Block> blocks = new ArrayList<>(); //contains all blocks except player
+    ArrayList<Block> blocks; //contains all blocks except player
     Bullet[] bullet = new Bullet[10];
     int maxNumOfBullet = 10; // you can set the maximum number of bullets
     int numOfBullet = 0;
     Paint p = new Paint();
-    //GregorianCalendar cal = new GregorianCalendar();
 
     public void addBlock(Block block){
         blocks.add(block);
@@ -57,7 +55,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void loadGame(int gameLevel){
-        player = new Player(200, getHeight()/2, 10, 30, 10, 3, getWidth(), getHeight(), context, this);
+        blocks = new ArrayList<>();
+        player = null;
         level = new Level(this);
         level.loadLevel(gameLevel);
         //bullet creation
@@ -74,16 +73,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public void loadTouchHandler(){
         setOnTouchListener(new OnTouchListener() {
             int lastAction = -1;
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                //for now, player can only shoot when stopped and multiple bullets can be on screen at a time
                 if (event.getY() < getHeight() * 3 / 4) {
                     if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                         for (int x = 0; x < maxNumOfBullet; x++) {
                             if (!bullet[x].isShooting && bullet[x].getX() < getWidth() && bullet[x].getX() > 0) { //prevent bug with bullet being launched from offscreen
                                 bullet[x].setShooting(true, player.facingRight);
-                                Log.i("Bullet", bullet[x].getX()+","+bullet[x].getY());
-                                player.drawShooting = 5;
+                                Log.i("Bullet", bullet[x].getX() + "," + bullet[x].getY());
+                                player.drawShooting = 5; //draw 5 frames of player shooting image
                                 break;
                             }
                         }
@@ -98,14 +97,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                                     if (event.getX() > getWidth() / 2) {
                                         player.setState(Block.State.RIGHT);
                                         background.setState(Block.State.LEFT);
-                                        for (Block block : blocks){
+                                        for (Block block : blocks) {
                                             block.setState(Block.State.LEFT);
                                         }
                                         lastAction = 0;
                                     } else {
                                         player.setState(Block.State.LEFT);
                                         background.setState(Block.State.RIGHT);
-                                        for (Block block : blocks){
+                                        for (Block block : blocks) {
                                             block.setState(Block.State.RIGHT);
                                         }
                                         lastAction = 1;
@@ -115,7 +114,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                             case MotionEvent.ACTION_UP:
                                 player.setState(Block.State.STOPPED);
                                 background.setState(Block.State.STOPPED);
-                                for (Block block : blocks){
+                                for (Block block : blocks) {
                                     block.setState(Block.State.STOPPED);
                                 }
                                 lastAction = -1;
@@ -126,13 +125,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                                     if (event.getX(1) > getWidth() / 2) {
                                         player.setState(Block.State.RIGHT);
                                         background.setState(Block.State.LEFT);
-                                        for (Block block : blocks){
+                                        for (Block block : blocks) {
                                             block.setState(Block.State.LEFT);
                                         }
                                     } else if (event.getX(1) < getWidth() / 2) {
                                         player.setState(Block.State.LEFT);
                                         background.setState(Block.State.RIGHT);
-                                        for (Block block : blocks){
+                                        for (Block block : blocks) {
                                             block.setState(Block.State.RIGHT);
                                         }
                                     }
@@ -148,13 +147,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                                     if (event.getX(1) < getWidth() / 2 && player.state == Block.State.RIGHT) { //cancel right movement
                                         player.setState(Block.State.STOPPED);
                                         background.setState(Block.State.STOPPED);
-                                        for (Block block : blocks){
+                                        for (Block block : blocks) {
                                             block.setState(Block.State.STOPPED);
                                         }
                                     } else if (event.getX(1) > getWidth() / 2 && player.state == Block.State.LEFT) { //cancel left movement
                                         player.setState(Block.State.STOPPED);
                                         background.setState(Block.State.STOPPED);
-                                        for (Block block : blocks){
+                                        for (Block block : blocks) {
                                             block.setState(Block.State.STOPPED);
                                         }
                                     }
@@ -165,14 +164,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                                     case 0:
                                         player.setState(Block.State.RIGHT);
                                         background.setState(Block.State.LEFT);
-                                        for (Block block : blocks){
+                                        for (Block block : blocks) {
                                             block.setState(Block.State.LEFT);
                                         }
                                         break;
                                     case 1:
                                         player.setState(Block.State.LEFT);
                                         background.setState(Block.State.RIGHT);
-                                        for (Block block : blocks){
+                                        for (Block block : blocks) {
                                             block.setState(Block.State.RIGHT);
                                         }
                                 }
@@ -183,37 +182,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 return false;
             }
         });
-
-                /*switch(event.getActionMasked()){
-                    case MotionEvent.ACTION_DOWN:
-                        if(event.getY() > getHeight()*3/4){
-                            if(event.getX() > getWidth() / 2){
-                                player.setState(Block.State.RIGHT);
-                                background.setState(Block.State.LEFT);
-                                for (Block block : blocks){
-                                    block.setState(Block.State.LEFT);
-                                }
-
-                            }else{
-                                player.setState(Block.State.LEFT);
-                                background.setState(Block.State.RIGHT);
-                                for (Block block : blocks){
-                                    block.setState(Block.State.RIGHT);
-                                }
-                            }
-                        }
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        background.setState(Block.State.STOPPED);
-                        player.setState(Block.State.STOPPED);
-                        for (Block block : blocks){
-                            block.setState(Block.State.STOPPED);
-                        }
-                        break;
-                }
-                return true;
-            }
-        });*/
     }
 
 
@@ -278,7 +246,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         update();
         switch(gt.getGameState()){
             case RUNNING:
-                //canvas.drawColor(Color.LTGRAY);
                 background.draw(canvas);
 
                 //canvas.drawRect(player.hitbox, p); //for debug

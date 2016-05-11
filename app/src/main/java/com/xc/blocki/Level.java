@@ -21,9 +21,9 @@ public class Level {
             case 1:
                 return  "                    \n"+
                         "                    \n"+
-                        "                    \n"+
-                        "                    \n"+
-                        "         1  g 1 1   \n"+
+                        "gp                  \n"+
+                        "gg g                \n"+
+                        "gg       1  g 1 1 f \n"+
                         "gggggggggggggggggggg\n";
 
             case 2:
@@ -60,9 +60,17 @@ public class Level {
                 case ' ':
                     x++;
                     break;
+                case 'f':
+                    gameView.addBlock(new FinishLine(x*BLOCK_WIDTH, y*BLOCK_HEIGHT, gameView.getWidth(), gameView.getHeight(), gameView.context, gameView));
+                    x++;
+                    break;
                 case 'g':
                     gameView.addBlock(new Ground(x*BLOCK_WIDTH, y*BLOCK_HEIGHT,
                             gameView.getWidth(), gameView.getHeight(), gameView.context));
+                    x++;
+                    break;
+                case 'p':
+                    gameView.player = new Player(x*BLOCK_WIDTH, y*BLOCK_HEIGHT, 10, 10, 10, 1, gameView.getWidth(), gameView.getHeight(), gameView.context, gameView);
                     x++;
                     break;
                 case '1':

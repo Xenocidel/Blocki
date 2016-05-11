@@ -17,7 +17,6 @@ public class Enemy1 extends Block {
         Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.enemy1);
         bitmap =  Bitmap.createScaledBitmap(tmp, width, height, false);
         health = 1;
-        isAlive = true;
     }
 
     @Override
