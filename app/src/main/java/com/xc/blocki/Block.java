@@ -61,7 +61,7 @@ public abstract class Block {
     public abstract void setState(State state);
 
     public abstract void update();
-    public abstract void update(int i);
+
     public abstract void draw(Canvas canvas);
 
 }

@@ -22,24 +22,15 @@ public class Enemy1 extends Block {
 
     @Override
     public void update() {
-
-    }
-
-    @Override
-    public void update(int playerX) {
         if (health <= 0){
             isAlive = false;
         }
-        //If player at quarter screen, ground can move.
-        //If ground touches the end, it can not go back.
         if (isAlive) {
-            if (playerX >= getWidth / 4) {
-                if (state == State.LEFT) {
-                    x -= 10;
-                }
-                if (state == State.RIGHT) {
-                    x += 10;
-                }
+            if (state == State.LEFT) {
+                x -= 10;
+            }
+            if (state == State.RIGHT) {
+                x += 10;
             }
             hitbox.set(x, y, x+width, y+height);
         }

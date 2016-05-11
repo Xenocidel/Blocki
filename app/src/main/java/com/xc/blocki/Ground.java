@@ -32,21 +32,12 @@ public class Ground extends Block {
     }
 
     @Override
-    public void update() {
-
-    }
-
-
-    public void update(int playerX){
-        //If player at quarter screen, ground can move.
-        //If ground touches the end, it can not go back.
-        if(playerX >= getWidth/4) {
-            if (state == State.LEFT) {
-                x -= 10;
-            }
-            if (state == State.RIGHT) {
-                x += 10;
-            }
+    public void update(){
+        if (state == State.LEFT) {
+            x -= 10;
+        }
+        if (state == State.RIGHT) {
+            x += 10;
         }
         hitbox.set(x, y, x+width, y+height);
     }

@@ -33,29 +33,20 @@ public class Background extends Block {
     }
 
     @Override
-    public void update() {
-
-    }
-
-    public void update(int playerX){
-        //If player at quarter screen, background can move.
-        //If background touches the end, it can not go back.
-        if(playerX >= getWidth/4) {
-            backgroundStopped = false;
-            if (state == state.LEFT) {
-                x -= 10;
-                if(x <= -(gameView.endX - gameView.getWidth())){
-                    x = -(gameView.endX - gameView.getWidth());
-                    backgroundStopped =true;
-                }
+    public void update(){
+        if (state == state.LEFT) {
+            x -= 10;
+        }
+        if (state == state.RIGHT) {
+            x += 10;
+            if(x > 0){
+                x = 0;
+                gameView.STOPPED = true;
             }
-            if (state == state.RIGHT) {
-                x += 10;
-                if(x >= 0){
-                    x = 0;
-                    backgroundStopped = true;
-                }
-            }
+        }
+
+        if(x == -(gameView.endX - gameView.getWidth())){
+            gameView.STOPPED = true;
         }
     }
 

@@ -47,45 +47,33 @@ public class Player extends Block {
     public void update() {
 
     }
-    @Override
-    public void update(int i) {
 
-    }
-    public void update(boolean backgroundStopped) {
-        //collisionDetection();
+    public void update(int backgroundX) {
+        collisionDetection();
         if (!isAlive){
             gameView.gt.setGameState(GameThread.GameState.OVER);
         }
         //Log.i("Player", hitbox.toShortString());
-        if (state == State.LEFT) {
-            if (backgroundStopped)
+        if (state == state.LEFT) {
+            if(gameView.STOPPED) {
                 x -= speedX;
-            /*gameCoordX -= speedX;
-            if (gameCoordX <= 0) {
-                gameCoordX = 0;
-            }*/
-            if (x <= 0) {
+            }
+            if(x <= 0){
                 x = 0;
             }
             facingRight = false;
         }
-        if (state == State.RIGHT) {
-            if (backgroundStopped)
+        if (state == State.RIGHT){
+            if(gameView.STOPPED) {
                 x += speedX;
-            /*gameCoordX += speedX;
-            if (gameCoordX >= gameView.endX - width) {
-                gameCoordX = gameView.endX - width;
-            }*/
-            if(gameView.fullScreen){
-                if(x > getWidth - width){
-                    x = getWidth - width;
-                }
-            }else{
-                if (x >= gameView.endX - width) {
-                    x = gameView.endX - width;
-                }
+            }
+            if(x > getWidth - width) {
+                x = getWidth - width;
             }
             facingRight = true;
+        }
+        if(x >= getWidth/4 && backgroundX == 0) {
+            gameView.STOPPED = false;
         }
         if (y + height >= getHeight - height) { //hardcoded ground level
             y = getHeight - 2*height;
@@ -109,6 +97,8 @@ public class Player extends Block {
                         break blockLoop;
                     case GROUND:
                         //player cannot move and stops
+                        setState(State.STOPPED);
+                        x--;
                         gameView.STOPPED=true;
                         break;
                     case ITEM:

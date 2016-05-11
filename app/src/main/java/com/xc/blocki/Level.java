@@ -21,9 +21,9 @@ public class Level {
             case 1:
                 return  "                    \n"+
                         "                    \n"+
-                        "                    \n"+
-                        "                    \n"+
-                        "    g  1 1 1 1      \n"+
+                        "g                   \n"+
+                        "g                   \n"+
+                        "g        1  g 1 1   \n"+
                         "gggggggggggggggggggg\n";
 
             case 2:

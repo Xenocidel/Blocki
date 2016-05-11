@@ -39,9 +39,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     Level level;
     Player player;
     Background background;
-    boolean STOPPED;
+    boolean STOPPED = true;
     int endX; //rightmost position in game coordinates
-    boolean fullScreen; // if endX > getWidth, fullScreen is true;
     ArrayList<Block> blocks = new ArrayList<>(); //contains all blocks except player
     Bullet[] bullet = new Bullet[10];
     int maxNumOfBullet = 10; // you can set the maximum number of bullets
@@ -58,7 +57,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void loadGame(int gameLevel){
-        player = new Player(50, getHeight()/2, 10, 30, 10, 3, getWidth(), getHeight(), context, this);
+        player = new Player(200, getHeight()/2, 10, 30, 10, 3, getWidth(), getHeight(), context, this);
         level = new Level(this);
         level.loadLevel(gameLevel);
         //bullet creation
@@ -220,30 +219,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     public void update(){
         scoreText = "Score: "+score;
-        player.update(background.backgroundStopped);
+        player.update(background.x);
         if (gt.getGameState() == GameThread.GameState.OVER){
             return;
         }
-        if(endX > getWidth()){
-            fullScreen = true;
-        }else{
-            fullScreen = false;
-            STOPPED = true;
-        }
-        if(!STOPPED) {
-            background.update(player.x);
-            if(background.x < -(endX - getWidth())){
-                STOPPED = true;
-            }
-            for (Block block : blocks) {
-                block.update(player.x);
-                if (block.x < -(endX - getWidth())) {
-                    // if ground touched the bound, background, ground enemy all can't move.
-                    STOPPED = true;
-                }
-            }
 
-        }
+        if(!STOPPED) { background.update(); }
+        if(!STOPPED){ for (Block block : blocks) { block.update(); } }
+
         collisionDetection(); //bullet collision detection
         for (int i = 0; i < numOfBullet; i++) {
             //variable xi used here for the initial location of the bullet
