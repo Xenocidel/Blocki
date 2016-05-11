@@ -230,6 +230,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                                     bullet[j].isAlive = false;
                                     bullet[j].update(player.getX(), player.getY(), player.facingRight);
                                     block.health--;
+                                    block.update();
                                     break bulletDied;
                                 }
                                 break;
