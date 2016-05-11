@@ -22,7 +22,8 @@ public class Background extends Block {
         super(0, 0, 0, 0, 0, 0, getWidth, getHeight, context);
         this.gameView = gameView;
         Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.background2);
-        bitmap =  Bitmap.createScaledBitmap(tmp, getWidth, getHeight, false);
+        Log.d("gameView.endX = ", String.valueOf(gameView.endX));
+        bitmap =  Bitmap.createScaledBitmap(tmp, gameView.endX, getHeight, false);
         backgroundStopped = true;
     }
 
