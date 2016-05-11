@@ -72,10 +72,7 @@ public class Player extends Block {
         if(x >= getWidth/4 && backgroundX == 0) {
             gameView.STOPPED = false;
         }
-        if (y + height >= getHeight - height) { //hardcoded ground level
-            y = getHeight - 2*height;
-        }
-        else {
+        if (state != State.STOPPED) {
             y += gravity;
         }
         hitbox.set(x, y, x+width, y+height);
@@ -85,14 +82,19 @@ public class Player extends Block {
         RectF tmp;
         switch(state){
             case RIGHT:
-                tmp = new RectF(x+10, y, x+10+width, y+height);
+                tmp = new RectF(x+speedX, y, x+speedX+width, y+height);
                 break;
             case LEFT:
-                tmp = new RectF(x-10, y, x-10+width, y+height);
+                tmp = new RectF(x-speedX, y, x-speedX+width, y+height);
+                break;
+            case STOPPED:
+                tmp = new RectF(x, y-gravity, x+width, y-gravity+height);
                 break;
             default:
                 tmp = hitbox;
+                break;
         }
+        boolean intersectsSomething = false;
         blockLoop:
         for (Block i : gameView.blocks){
             if (RectF.intersects(tmp, i.hitbox)){
@@ -100,11 +102,13 @@ public class Player extends Block {
                     case ENEMY:
                         //for now player dies immediately upon hitting an enemy
                         isAlive = false;
+                        intersectsSomething = true;
                         break blockLoop;
                     case GROUND:
                         //player cannot move and stops
                         setState(State.STOPPED);
                         gameView.STOPPED=true;
+                        intersectsSomething = true;
                         break;
                     case ITEM:
                         if (i instanceof FinishLine){
@@ -112,9 +116,13 @@ public class Player extends Block {
                             gameView.gt.gameLoaded = false;
                             break blockLoop;
                         }
+                        intersectsSomething = true;
                         break;
                 }
             }
+        }
+        if (!intersectsSomething){ //if nothing intersects the player bottom - gravity, it is falling
+            setState(State.FALLING);
         }
     }
 

@@ -23,7 +23,7 @@ public class Level {
                         "                    \n"+
                         "gp                  \n"+
                         "gg g                \n"+
-                        "gg       1  g 1 1 f \n"+
+                        "gg       1  1 1 1 f \n"+
                         "gggggggggggggggggggg\n";
 
             case 2:

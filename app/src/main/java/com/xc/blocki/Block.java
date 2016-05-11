@@ -27,7 +27,7 @@ public abstract class Block {
     State state;
     Type type;
     Bitmap bitmap;
-    public enum State{STOPPED, RIGHT, LEFT};
+    public enum State{STOPPED, RIGHT, LEFT, FALLING};
     public boolean onGround;
     public enum Type{PLAYER, ENEMY, GROUND, ITEM};
 
