@@ -121,7 +121,7 @@ public class Player extends Block {
                 }
             }
         }
-        if (!intersectsSomething){ //if nothing intersects the player bottom - gravity, it is falling
+        if (!intersectsSomething && state != State.STOPPED){ //if nothing intersects the player bottom - gravity, it is falling
             setState(State.FALLING);
         }
     }
