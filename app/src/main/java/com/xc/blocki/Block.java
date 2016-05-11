@@ -20,14 +20,14 @@ public abstract class Block {
     int health;
     int getWidth; //screen width
     int getHeight;
-    boolean obstacle;
+    boolean isAlive;
     Context context;
     GameView gameView;
     RectF hitbox;
     State state;
     Type type;
     Bitmap bitmap;
-    public enum State{STOPPED, RIGHT, LEFT, JUMPING};
+    public enum State{STOPPED, RIGHT, LEFT};
     public boolean onGround;
     public enum Type{PLAYER, ENEMY, GROUND, ITEM};
 
@@ -51,6 +51,7 @@ public abstract class Block {
         this.context = context;
         state = State.STOPPED;
         this.gameView = gameView;
+        isAlive = true;
         hitbox = new RectF(xPos, yPos, xPos+width, yPos+height);
     }
 

@@ -16,6 +16,8 @@ public class Enemy1 extends Block {
         type = Type.ENEMY;
         Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.enemy1);
         bitmap =  Bitmap.createScaledBitmap(tmp, width, height, false);
+        health = 1;
+        isAlive = true;
     }
 
     @Override
@@ -25,15 +27,21 @@ public class Enemy1 extends Block {
 
     @Override
     public void update(int playerX) {
+        if (health <= 0){
+            isAlive = false;
+        }
         //If player at quarter screen, ground can move.
         //If ground touches the end, it can not go back.
-        if(playerX >= getWidth/4) {
-            if (state == State.LEFT) {
-                x -= 10;
+        if (isAlive) {
+            if (playerX >= getWidth / 4) {
+                if (state == State.LEFT) {
+                    x -= 10;
+                }
+                if (state == State.RIGHT) {
+                    x += 10;
+                }
             }
-            if (state == State.RIGHT) {
-                x += 10;
-            }
+            hitbox.set(x, y, x+width, y+height);
         }
     }
 
@@ -42,7 +50,10 @@ public class Enemy1 extends Block {
         this.state = state;
     }
 
-
     @Override
-    public void draw(Canvas canvas) { canvas.drawBitmap(bitmap, x, y, null); }
+    public void draw(Canvas canvas) {
+        if (isAlive){
+            canvas.drawBitmap(bitmap, x, y, null);
+        }
+    }
 }

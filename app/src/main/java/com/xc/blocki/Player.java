@@ -24,6 +24,7 @@ public class Player extends Block {
                   int getWidth, int getHeight, Context context, GameView gameView) {
         super(xPos, yPos, xSpeed, ySpeed, gravity, health, getWidth, getHeight,context, gameView);
         type = Type.PLAYER;
+        health = 1;
         Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.player_left);
         idleLeft = Bitmap.createScaledBitmap(tmp, width, height, false);
         tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.shoot_left);
@@ -51,7 +52,11 @@ public class Player extends Block {
 
     }
     public void update(boolean backgroundStopped) {
-        Log.i("Player", hitbox.toShortString());
+        //collisionDetection();
+        if (!isAlive){
+            gameView.gt.setGameState(GameThread.GameState.OVER);
+        }
+        //Log.i("Player", hitbox.toShortString());
         if (state == State.LEFT) {
             if (backgroundStopped)
                 x -= speedX;
@@ -93,8 +98,25 @@ public class Player extends Block {
         //Log.i("Player", hitbox.toShortString());
     }
 
-    public void checkIntersect(){
-
+    public void collisionDetection(){
+        blockLoop:
+        for (Block i : gameView.blocks){
+            if (RectF.intersects(hitbox, i.hitbox)){
+                switch (i.type){
+                    case ENEMY:
+                        //for now player dies immediately upon hitting an enemy
+                        isAlive = false;
+                        break blockLoop;
+                    case GROUND:
+                        //player cannot move and stops
+                        gameView.STOPPED=true;
+                        break;
+                    case ITEM:
+                        //todo: items not yet implemented
+                        break;
+                }
+            }
+        }
     }
 
     public float getX(){

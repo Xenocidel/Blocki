@@ -48,6 +48,7 @@ public class Ground extends Block {
                 x += 10;
             }
         }
+        hitbox.set(x, y, x+width, y+height);
     }
 
     @Override

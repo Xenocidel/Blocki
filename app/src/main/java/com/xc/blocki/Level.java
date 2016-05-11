@@ -54,7 +54,7 @@ public class Level {
             switch (tmp){
                 case '\n':
                     y++;
-                    gameView.endX = (x+1)*BLOCK_WIDTH;
+                    gameView.endX = x*BLOCK_WIDTH;
                     x=0;
                     break;
                 case ' ':

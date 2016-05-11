@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -33,6 +35,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     GameThread gt;
     //int gameLevel=1;
     int score=0;
+    String scoreText;
     Level level;
     Player player;
     Background background;
@@ -43,6 +46,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     Bullet[] bullet = new Bullet[10];
     int maxNumOfBullet = 10; // you can set the maximum number of bullets
     int numOfBullet = 0;
+    Paint p = new Paint();
     //GregorianCalendar cal = new GregorianCalendar();
 
     public void addBlock(Block block){
@@ -215,7 +219,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
 
     public void update(){
+        scoreText = "Score: "+score;
         player.update(background.backgroundStopped);
+        if (gt.getGameState() == GameThread.GameState.OVER){
+            return;
+        }
         if(endX > getWidth()){
             fullScreen = true;
         }else{
@@ -229,81 +237,58 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             }
             for (Block block : blocks) {
                 block.update(player.x);
-                if (block.x <= -(endX - getWidth())) {
+                if (block.x < -(endX - getWidth())) {
                     // if ground touched the bound, background, ground enemy all can't move.
                     STOPPED = true;
                 }
             }
 
         }
-        //collisionDetection();
-        //bullet[] update
+        collisionDetection(); //bullet collision detection
         for (int i = 0; i < numOfBullet; i++) {
             //variable xi used here for the initial location of the bullet
             if (player.facingRight){
                 bullet[i].xi = player.hitbox.right;
             }
             else{
-                bullet[i].xi = player.hitbox.left - bullet[i].bulletWidth;
+                bullet[i].xi = player.hitbox.left - bullet[i].margin;
             }
             bullet[i].update(bullet[i].xi, player.hitbox.centerY()-bullet[i].bulletHeight, player.facingRight);
         }
 
     }
 
-    /*
+
     public void collisionDetection(){
-        //if a bullet collides with an invader, invaders[i].isAlive = false
-        outerLoop:
+        //if a bullet collides with a non-item block, bullet.isAlive = false
         for(int j=0; j<numOfBullet; j++){
             if (bullet[j].isShooting) {
-                float bCenterX = bullet[j].getX() + bullet[j].bulletWidth / 2;
-                float bCenterY = bullet[j].getY() - bullet[j].bulletHeight / 2;
-                float uCenterX = ufo.getX() + ufo.shipWidth / 2;
-                float uCenterY = ufo.getY() - ufo.shipWidth / 2;
-                if((Math.abs(uCenterY - bCenterY) <= touchDistanceYforUFO ) && (Math.abs(uCenterX - bCenterX) <= touchDistanceXforUFO)){
-                    soundPool.play(soundShotUFO,1,1,1,0,1);
-                    bullet[j].isAlive = false;
-                    bullet[j].update(ship.getX()); //to prevent multi-kill with one bullet
-                    score += 20*level;
-                    scoreString = "Score: "+score;
-                }
-                for(int i=0; i<numOfInvaders; i++){
-                    if (invaders[i].isAlive) {
-                        float iCenterX = invaders[i].getX() + invaders[i].invadersWidth / 2;
-                        float iCenterY = invaders[i].getY() - invaders[i].invadersHight / 2;
-                        if ((Math.abs(iCenterY - bCenterY) <= touchDistanceY) && (Math.abs(iCenterX - bCenterX) <= touchDistanceX)) {
-                            soundPool.play(soundBomb,0.1f,0.1f,1,0,1);
-                            invaders[i].isAlive = false;
-                            bullet[j].isAlive = false;
-                            bullet[j].update(ship.getX()); //to prevent multi-kill with one bullet
-                            score+=level;
-                            if (--numOfInvadersAlive == 0) {
-                                //disable all touch handling while next level is loading
-                                setOnTouchListener(null);
-                                //remove all bullets in the air before loading next level
-                                for (int k = 0; k < numOfBullet; k++){
-                                    if (bullet[k].isShooting){
-                                        bullet[k].setShooting(false);
-                                        bullet[k].resetY();
-                                        bullet[k].update(ship.getX());
-                                    }
+                RectF b = new RectF(bullet[j].getX(), bullet[j].getY(), bullet[j].getX()+bullet[j].bulletWidth, bullet[j].getY()+bullet[j].bulletHeight);
+                bulletDied:
+                for (Block block : blocks){
+                    if(RectF.intersects(b, block.hitbox)){
+                        switch(block.type){
+                            case GROUND:
+                                Log.i("Bullet", "hit ground");
+                                bullet[j].isAlive = false;
+                                bullet[j].update(player.getX(), player.getY(), player.facingRight);
+                                break bulletDied;
+                            case ENEMY:
+                                if (block.isAlive) {
+                                    Log.i("Bullet", "hit enemy");
+                                    bullet[j].isAlive = false;
+                                    bullet[j].update(player.getX(), player.getY(), player.facingRight);
+                                    block.health--;
+                                    break bulletDied;
                                 }
-                                score+=level*level;
-                                level++;
-                                st.setGameState(st.LOADING);
-                                break outerLoop;
-                            }
-                            scoreString = "Score: "+score;
-                            levelString = "Level: "+(int)level;
-                            Log.d("collisionDetection", "invaders[" + i + "] removed by bullet["+j+"]");
+                                break;
                         }
                     }
                 }
             }
         }
-    }*/
-    Paint p = new Paint(); //for debug
+    }
+
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
@@ -312,20 +297,35 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             case RUNNING:
                 //canvas.drawColor(Color.LTGRAY);
                 background.draw(canvas);
-                player.draw(canvas);
-                p.setAlpha(128);
-                p.setColor(Color.GREEN);
+
                 //canvas.drawRect(player.hitbox, p); //for debug
                 for (Block block : blocks){
-                    block.draw(canvas);
+                    if (block.isAlive)
+                        block.draw(canvas);
                 }
                 for (int i = 0; i < numOfBullet; i++) {
                     bullet[i].draw(canvas);
                 }
+                player.draw(canvas);
+                p.setTextSize(getHeight()/12);
+                p.setAntiAlias(true);
+                p.setColor(Color.BLACK);
+                p.setTextAlign(Paint.Align.LEFT);
+                canvas.drawText(scoreText, 10, getHeight()/12+5, p);
+
                 break;
             case LOADING:
                 break;
             case OVER:
+                canvas.drawColor(Color.BLACK);
+                p.setTextSize(getHeight()/8);
+                p.setAntiAlias(true);
+                p.setColor(Color.WHITE);
+                p.setTextAlign(Paint.Align.CENTER);
+                p.setFakeBoldText(true);
+                canvas.drawText("Game Over!", getWidth()/2, getHeight()/2, p);
+                p.setTextSize(getHeight()/12);
+                canvas.drawText(scoreText, getWidth()/2, getHeight()*3/4, p);
                 break;
         }
     }
