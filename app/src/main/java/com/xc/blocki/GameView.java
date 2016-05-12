@@ -194,9 +194,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         if (gt.getGameState() == GameThread.GameState.OVER){
             return;
         }
-
+        Log.d("gameView.STOPPED", String.valueOf(STOPPED));
         if(!STOPPED) { background.update(); }
-        if(!STOPPED){ for (Block block : blocks) { block.update(); } }
+        if(!STOPPED) { for (Block block : blocks) { block.update(); } }
 
         collisionDetection(); //bullet collision detection
         for (int i = 0; i < numOfBullet; i++) {
