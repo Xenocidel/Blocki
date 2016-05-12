@@ -23,6 +23,7 @@ public class Enemy1 extends Block {
     public void update() {
         if (health <= 0){
             isAlive = false;
+            //gameView.score+=1;
         }
         if (isAlive) {
             if (state == State.LEFT) {

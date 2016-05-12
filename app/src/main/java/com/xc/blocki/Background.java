@@ -45,7 +45,7 @@ public class Background extends Block {
             }
         }
 
-        if(x == -(gameView.endX - gameView.getWidth())){
+        if(x <= -(gameView.endX + gameView.getWidth())){
             gameView.STOPPED = true;
         }
     }

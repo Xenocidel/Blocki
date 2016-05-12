@@ -69,10 +69,17 @@ public class Player extends Block {
             }
             facingRight = true;
         }
-        if(x >= getWidth/4 && backgroundX == 0) {
+        boolean onGround = false;
+        RectF tmp = new RectF(x, y+gravity, x+width, y+gravity+height);
+        for (Block i : gameView.blocks){
+            if (RectF.intersects(tmp, i.hitbox) && i.type == Type.GROUND) {
+                onGround = true;
+            }
+        }
+        if(x >= getWidth/4 && onGround) {
             gameView.STOPPED = false;
         }
-        if (state == State.FALLING) {
+        if (!onGround) {
             y += gravity;
         }
         hitbox.set(x, y, x+width, y+height);
@@ -80,7 +87,6 @@ public class Player extends Block {
 
     public void collisionDetection(){
         RectF tmp;
-        boolean fallingCheck = false;
         switch(state){
             case RIGHT:
                 tmp = new RectF(x+speedX, y, x+speedX+width, y+height);
@@ -88,45 +94,37 @@ public class Player extends Block {
             case LEFT:
                 tmp = new RectF(x-speedX, y, x-speedX+width, y+height);
                 break;
-            case FALLING:
-                tmp = new RectF(x, y-gravity, x+width, y-gravity+height);
-                fallingCheck = true;
-                break;
-            default:
+            default: //STOPPED
                 tmp = hitbox;
                 break;
         }
-        boolean intersectsSomething = false;
         blockLoop:
         for (Block i : gameView.blocks){
             if (RectF.intersects(tmp, i.hitbox)){
                 switch (i.type){
                     case ENEMY:
                         //for now player dies immediately upon hitting an enemy
-                        isAlive = false;
-                        intersectsSomething = true;
-                        break blockLoop;
+                        if (i.isAlive) {
+                            isAlive = false;
+                            break blockLoop;
+                        }
+                        else
+                            break;
                     case GROUND:
                         //player cannot move and stops
                         setState(State.STOPPED);
                         gameView.STOPPED=true;
-                        if (!fallingCheck){
-                            intersectsSomething = true;
-                        }
                         break;
                     case ITEM:
                         if (i instanceof FinishLine){
                             gameView.gt.setGameState(GameThread.GameState.LOADING);
                             gameView.gt.gameLoaded = false;
+                            gameView.gt.level++;
                             break blockLoop;
                         }
-                        intersectsSomething = true;
                         break;
                 }
             }
-        }
-        if (!intersectsSomething && state == State.STOPPED){
-            setState(State.FALLING);
         }
     }
 

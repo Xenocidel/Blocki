@@ -41,8 +41,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     boolean STOPPED = true;
     int endX; //rightmost position in game coordinates
     ArrayList<Block> blocks; //contains all blocks except player
-    Bullet[] bullet = new Bullet[10];
     int maxNumOfBullet = 10; // you can set the maximum number of bullets
+    Bullet[] bullet = new Bullet[maxNumOfBullet];
     int numOfBullet = 0;
     Paint p = new Paint();
 
@@ -57,6 +57,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public void loadGame(int gameLevel){
         blocks = new ArrayList<>();
         player = null;
+        bullet = null;
+        bullet = new Bullet[maxNumOfBullet];
+        numOfBullet = 0;
         level = new Level(this);
         level.loadLevel(gameLevel);
         //bullet creation
@@ -65,8 +68,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             numOfBullet++;
         }
         background = new Background(getWidth(), getHeight(),context, this);
-
-
         loadTouchHandler();
     }
 
@@ -76,14 +77,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getY() < getHeight() * 3 / 4) {
-                    if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                        for (int x = 0; x < maxNumOfBullet; x++) {
-                            if (!bullet[x].isShooting && bullet[x].getX() < getWidth() && bullet[x].getX() > 0) { //prevent bug with bullet being launched from offscreen
-                                bullet[x].setShooting(true, player.facingRight);
-                                Log.i("Bullet", bullet[x].getX() + "," + bullet[x].getY());
-                                player.drawShooting = 5; //draw 5 frames of player shooting image
-                                break;
+                for (int i = 0; i < event.getPointerCount(); i++){
+                    if (event.getY(i) < getHeight() * 3 / 4) {
+                        if (event.getActionMasked() == MotionEvent.ACTION_DOWN || event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
+                            for (int x = 0; x < maxNumOfBullet; x++) {
+                                if (!bullet[x].isShooting && bullet[x].getX() < getWidth() && bullet[x].getX() > 0) { //prevent bug with bullet being launched from offscreen
+                                    bullet[x].setShooting(true, player.facingRight);
+                                    Log.i("Bullet", bullet[x].getX() + "," + bullet[x].getY());
+                                    player.drawShooting = 5; //draw 5 frames of player shooting image
+                                    break;
+                                }
                             }
                         }
                     }
