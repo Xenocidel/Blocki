@@ -6,9 +6,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -28,6 +31,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         this.context = context;
         getHolder (). addCallback(this);
         setFocusable(true);
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        int height = metrics.heightPixels/4;
+        Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.leftbutton);
+        leftarrow = Bitmap.createScaledBitmap(tmp, height, height, false);
+        tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.rightbutton);
+        rightarrow = Bitmap.createScaledBitmap(tmp, height, height, false);
+        tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.shootbutton);
+        shoot = Bitmap.createScaledBitmap(tmp, height, height, false);
+        buttonSize = height;
+        blocks = new ArrayList<>();
+        enemies = new ArrayList<>();
     }
 
     Context context;
@@ -41,10 +55,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     boolean STOPPED = true;
     int endX; //rightmost position in game coordinates
     ArrayList<Block> blocks; //contains all blocks except player
+    ArrayList<Enemy1> enemies; //contains all enemies
     int maxNumOfBullet = 10; // you can set the maximum number of bullets
     Bullet[] bullet = new Bullet[maxNumOfBullet];
     int numOfBullet = 0;
+    Bitmap leftarrow;
+    Bitmap rightarrow;
+    Bitmap shoot;
     Paint p = new Paint();
+    int buttonSize;
 
     public void addBlock(Block block){
         blocks.add(block);
@@ -55,13 +74,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void loadGame(int gameLevel){
-        blocks = new ArrayList<>();
+        blocks.clear();
+        enemies.clear();
         player = null;
         bullet = null;
         bullet = new Bullet[maxNumOfBullet];
         numOfBullet = 0;
         level = new Level(this);
         level.loadLevel(gameLevel);
+        for (Block i : blocks){
+            if (i instanceof Enemy1){
+                enemies.add((Enemy1)i);
+            }
+        }
         //bullet creation
         for(int i=0; i<maxNumOfBullet; i++) {
             bullet[numOfBullet] = new Bullet(this.context, getWidth(), getHeight(), player.hitbox.right, player.hitbox.centerY());
@@ -74,11 +99,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public void loadTouchHandler(){
         setOnTouchListener(new OnTouchListener() {
             int lastAction = -1;
-
+            //todo: maybe add swipe detection for changing direction?
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 for (int i = 0; i < event.getPointerCount(); i++){
-                    if (event.getY(i) < getHeight() * 3 / 4) {
+                    if (event.getX(i) > getWidth()/2) {
                         if (event.getActionMasked() == MotionEvent.ACTION_DOWN || event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
                             for (int x = 0; x < maxNumOfBullet; x++) {
                                 if (!bullet[x].isShooting && bullet[x].getX() < getWidth() && bullet[x].getX() > 0) { //prevent bug with bullet being launched from offscreen
@@ -96,22 +121,20 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                         switch (event.getActionMasked()) {
                             case MotionEvent.ACTION_DOWN:
                                 Log.d("Log.debug", "ACTION_DOWN at X=" + Float.toString(event.getX()) + ", Y=" + Float.toString(event.getY()));
-                                if (event.getY() > getHeight() * 3 / 4) {
-                                    if (event.getX() > getWidth() / 2) {
-                                        player.setState(Block.State.RIGHT);
-                                        background.setState(Block.State.LEFT);
-                                        for (Block block : blocks) {
-                                            block.setState(Block.State.LEFT);
-                                        }
-                                        lastAction = 0;
-                                    } else {
-                                        player.setState(Block.State.LEFT);
-                                        background.setState(Block.State.RIGHT);
-                                        for (Block block : blocks) {
-                                            block.setState(Block.State.RIGHT);
-                                        }
-                                        lastAction = 1;
+                                if (event.getX() > buttonSize && event.getX() < getWidth()/2) {
+                                    player.setState(Block.State.RIGHT);
+                                    background.setState(Block.State.LEFT);
+                                    for (Block block : blocks) {
+                                        block.setState(Block.State.LEFT);
                                     }
+                                    lastAction = 0;
+                                } else if (event.getX() < buttonSize){
+                                    player.setState(Block.State.LEFT);
+                                    background.setState(Block.State.RIGHT);
+                                    for (Block block : blocks) {
+                                        block.setState(Block.State.RIGHT);
+                                    }
+                                    lastAction = 1;
                                 }
                                 break;
                             case MotionEvent.ACTION_UP:
@@ -124,19 +147,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                                 break;
                             case MotionEvent.ACTION_POINTER_UP: //two buttons pressed, first one released
                                 Log.d("Log.debug", "First button released");
-                                if (event.getY(1) > getHeight() * 3 / 4) {
-                                    if (event.getX(1) > getWidth() / 2) {
-                                        player.setState(Block.State.RIGHT);
-                                        background.setState(Block.State.LEFT);
-                                        for (Block block : blocks) {
-                                            block.setState(Block.State.LEFT);
-                                        }
-                                    } else if (event.getX(1) < getWidth() / 2) {
-                                        player.setState(Block.State.LEFT);
-                                        background.setState(Block.State.RIGHT);
-                                        for (Block block : blocks) {
-                                            block.setState(Block.State.RIGHT);
-                                        }
+                                if (event.getX(1) > buttonSize && event.getX(1) < getWidth()/2) {
+                                    player.setState(Block.State.RIGHT);
+                                    background.setState(Block.State.LEFT);
+                                    for (Block block : blocks) {
+                                        block.setState(Block.State.LEFT);
+                                    }
+                                } else if (event.getX(1) < buttonSize) {
+                                    player.setState(Block.State.LEFT);
+                                    background.setState(Block.State.RIGHT);
+                                    for (Block block : blocks) {
+                                        block.setState(Block.State.RIGHT);
                                     }
                                 }
                                 break;
@@ -146,19 +167,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                         switch (event.getActionMasked()) {
                             case MotionEvent.ACTION_POINTER_DOWN:
                                 Log.d("Log.debug", "ACTION_POINTER_DOWN at X= " + Float.toString(event.getX(1)));
-                                if (event.getY(1) > getHeight() * 3 / 4) {
-                                    if (event.getX(1) < getWidth() / 2 && player.state == Block.State.RIGHT) { //cancel right movement
-                                        player.setState(Block.State.STOPPED);
-                                        background.setState(Block.State.STOPPED);
-                                        for (Block block : blocks) {
-                                            block.setState(Block.State.STOPPED);
-                                        }
-                                    } else if (event.getX(1) > getWidth() / 2 && player.state == Block.State.LEFT) { //cancel left movement
-                                        player.setState(Block.State.STOPPED);
-                                        background.setState(Block.State.STOPPED);
-                                        for (Block block : blocks) {
-                                            block.setState(Block.State.STOPPED);
-                                        }
+                                if (event.getX(1) < buttonSize && player.state == Block.State.RIGHT) { //cancel right movement
+                                    player.setState(Block.State.STOPPED);
+                                    background.setState(Block.State.STOPPED);
+                                    for (Block block : blocks) {
+                                        block.setState(Block.State.STOPPED);
+                                    }
+                                } else if (event.getX(1) > buttonSize && event.getX(1) < getWidth()/2 && player.state == Block.State.LEFT) { //cancel left movement
+                                    player.setState(Block.State.STOPPED);
+                                    background.setState(Block.State.STOPPED);
+                                    for (Block block : blocks) {
+                                        block.setState(Block.State.STOPPED);
                                     }
                                 }
                                 break;
@@ -187,31 +206,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         });
     }
 
-
-    public void update(){
-        scoreText = "Score: "+score;
-        player.update(background.x);
-        if (gt.getGameState() == GameThread.GameState.OVER){
-            return;
-        }
-
-        if(!STOPPED) { background.update(); }
-        if(!STOPPED){ for (Block block : blocks) { block.update(); } }
-
-        collisionDetection(); //bullet collision detection
-        for (int i = 0; i < numOfBullet; i++) {
-            //variable xi used here for the initial location of the bullet
-            if (player.facingRight){
-                bullet[i].xi = player.hitbox.right;
-            }
-            else{
-                bullet[i].xi = player.hitbox.left - bullet[i].margin;
-            }
-            bullet[i].update(bullet[i].xi, player.hitbox.centerY()-bullet[i].bulletHeight, player.facingRight);
-        }
-
+    public void addScore(int score){
+        this.score+=score;
     }
-
 
     public void collisionDetection(){
         //if a bullet collides with a non-item block, bullet.isAlive = false
@@ -244,6 +241,49 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
 
+    public void updateAI(){
+        for (Enemy1 i : enemies){
+            for (Block j : blocks){
+                if (RectF.intersects(i.hitbox, j.hitbox) && i != j && i.isAlive && j.isAlive){
+                    if (i.movingRight){
+                        i.x -= i.speedX;
+                    }
+                    else{
+                        i.x += i.speedX;
+                    }
+                    i.movingRight = !i.movingRight;
+                    break;
+                }
+            }
+            i.updateAI();
+        }
+    }
+
+    public void update(){
+        scoreText = "Score: "+score;
+        player.update(background.x);
+        if (gt.getGameState() == GameThread.GameState.OVER){
+            return;
+        }
+
+        if(!STOPPED) { background.update(); }
+        if(!STOPPED){ for (Block block : blocks) { block.update(); } }
+        updateAI();
+
+        collisionDetection(); //bullet collision detection
+        for (int i = 0; i < numOfBullet; i++) {
+            //variable xi used here for the initial location of the bullet
+            if (player.facingRight){
+                bullet[i].xi = player.hitbox.right;
+            }
+            else{
+                bullet[i].xi = player.hitbox.left - bullet[i].margin;
+            }
+            bullet[i].update(bullet[i].xi, player.hitbox.centerY()-bullet[i].bulletHeight, player.facingRight);
+        }
+
+    }
+
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
@@ -264,8 +304,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 p.setTextSize(getHeight()/12);
                 p.setAntiAlias(true);
                 p.setColor(Color.BLACK);
+                p.setAlpha(255);
                 p.setTextAlign(Paint.Align.LEFT);
                 canvas.drawText(scoreText, 10, getHeight()/12+5, p);
+
+                p.setAlpha(200);
+                int buttonrow = getHeight()-buttonSize-10;
+
+                canvas.drawBitmap(leftarrow, 10, buttonrow, p);
+                canvas.drawBitmap(rightarrow, buttonSize+10, buttonrow, p);
+                canvas.drawBitmap(shoot, getWidth()-buttonSize-10, buttonrow, p);
 
                 break;
             case LOADING:

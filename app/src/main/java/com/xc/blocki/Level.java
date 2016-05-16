@@ -71,11 +71,12 @@ public class Level {
                     break;
                 case 'p':
                     gameView.player = new Player(x*BLOCK_WIDTH, y*BLOCK_HEIGHT, 10, 10, 10, 1, gameView.getWidth(), gameView.getHeight(), gameView.context, gameView);
+                    //todo: instead of creating a new player, implement a "move player" to avoid null pointers
                     x++;
                     break;
                 case '1':
-                    gameView.addBlock(new Enemy1(x*BLOCK_WIDTH, y*BLOCK_HEIGHT, 5, 5, 5, 1,
-                            gameView.getWidth(), gameView.getHeight(), gameView.context));
+                    gameView.addBlock(new Enemy1(x*BLOCK_WIDTH, y*BLOCK_HEIGHT, 1, 1, 10, 1,
+                            gameView.getWidth(), gameView.getHeight(), gameView.context, gameView));
                     x++;
                     break;
             }

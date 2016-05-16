@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.RectF;
 
 /**
  * Created by Aaron on 2016-05-03.
@@ -11,19 +12,23 @@ import android.graphics.Canvas;
 public class Enemy1 extends Block {
 
     public Enemy1(int xPos, int yPos, int xSpeed, int ySpeed, int gravity, int health,
-                  int getWidth, int getHeight, Context context) {
-        super(xPos, yPos, xSpeed, ySpeed, gravity, health, getWidth, getHeight, context);
+                  int getWidth, int getHeight, Context context, GameView gameView) {
+        super(xPos, yPos, xSpeed, ySpeed, gravity, health, getWidth, getHeight, context, gameView);
         type = Type.ENEMY;
         Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.enemy1);
         bitmap =  Bitmap.createScaledBitmap(tmp, width, height, false);
         health = 1;
+        movingRight = true;
     }
+
+    boolean movingRight;
 
     @Override
     public void update() {
         if (health <= 0){
+            if (isAlive)
+                gameView.addScore(1);
             isAlive = false;
-            //gameView.score+=1;
         }
         if (isAlive) {
             if (state == State.LEFT) {
@@ -33,6 +38,15 @@ public class Enemy1 extends Block {
                 x += 10;
             }
             hitbox.set(x, y, x+width, y+height);
+        }
+    }
+
+    public void updateAI(){
+        if (movingRight){
+            x += speedX;
+        }
+        else{
+            x -= speedX;
         }
     }
 
