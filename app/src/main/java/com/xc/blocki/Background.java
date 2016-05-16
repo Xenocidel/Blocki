@@ -15,7 +15,7 @@ import android.view.SurfaceView;
 public class Background extends Block {
 
     boolean backgroundStopped;
-    GameView gameView;
+
 
 
     public Background(int getWidth, int getHeight, Context context, GameView gameView){
@@ -36,6 +36,7 @@ public class Background extends Block {
     public void update(){
         if (state == state.LEFT) {
             x -= 10;
+            Log.d("background", state.toString());
         }
         if (state == state.RIGHT) {
             x += 10;
@@ -45,8 +46,9 @@ public class Background extends Block {
             }
         }
 
-        if(x <= -(gameView.endX + gameView.getWidth())){
+        if(x <= -(gameView.endX - gameView.getWidth())){
             gameView.STOPPED = true;
+
         }
     }
 
