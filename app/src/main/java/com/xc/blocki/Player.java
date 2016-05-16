@@ -76,7 +76,7 @@ public class Player extends Block {
                 onGround = true;
             }
         }
-        if(x >= getWidth/4 && onGround && backgroundX == 0) {
+        if(x >= getWidth/4 && backgroundX == 0) {
             gameView.STOPPED = false;
         }
         if (!onGround) {
