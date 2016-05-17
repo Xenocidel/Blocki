@@ -47,16 +47,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     Context context;
     boolean gameLoaded = false;
     GameThread gt;
+    Bitmaps bitmaps;
     int score=0;
     String scoreText;
+    String livesText;
     Level level;
     Player player;
     Background background;
     boolean STOPPED = true;
     int endX; //rightmost position in game coordinates
     ArrayList<Block> blocks; //contains all blocks except player
-    ArrayList<Enemy1> enemies; //contains all enemies
+    ArrayList<Enemy> enemies; //contains all enemies
     int maxNumOfBullet = 10; // you can set the maximum number of bullets
+    int bulletDamage = 1;   //in case bullet damage needs to be modified
     Bullet[] bullet;
     int numOfBullet = 0;
     Bitmap leftarrow;
@@ -74,6 +77,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void loadGame(int gameLevel){
+        if (gt.getGameState() == GameThread.GameState.INIT){
+            bitmaps = new Bitmaps(context, getWidth(), getHeight());
+        }
         //clear all fields
         blocks.clear();
         enemies.clear();
@@ -92,12 +98,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         level.loadLevel(gameLevel);
         //bullet creation
         for(int i=0; i<maxNumOfBullet; i++) {
-            bullet[numOfBullet] = new Bullet(this.context, getWidth(), getHeight(), player.hitbox.right, player.hitbox.centerY());
+            bullet[numOfBullet] = new Bullet(this, getWidth(), getHeight(), player.hitbox.right, player.hitbox.centerY());
             numOfBullet++;
         }
         for (Block i : blocks){
-            if (i instanceof Enemy1){
-                enemies.add((Enemy1)i);
+            if (i instanceof Enemy){
+                enemies.add((Enemy)i);
             }
         }
         background = new Background(getWidth(), getHeight(),context, this);
@@ -235,11 +241,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                                 break bulletDied;
                             case ENEMY:
                                 if (block.isAlive) {
-                                    Log.i("Bullet", "hit enemy");
                                     bullet[j].isAlive = false;
                                     bullet[j].update(player.getX(), player.getY(), player.facingRight);
-                                    block.health--;
+                                    ((Enemy)block).decreaseHealth(bulletDamage);
                                     block.update();
+                                    Log.i("Bullet", "hit enemy, enemy health at "+block.health);
                                     break bulletDied;
                                 }
                                 break;
@@ -251,7 +257,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void updateAI(){
-        for (Enemy1 i : enemies){
+        for (Enemy i : enemies){
             for (Block j : blocks){
                 if (RectF.intersects(i.hitbox, j.hitbox) && i != j && j.type != Block.Type.ITEM && i.isAlive && j.isAlive){
                     if (i.movingRight){
@@ -270,14 +276,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     public void update(){
         scoreText = "Score: "+score;
+        livesText = "Lives: "+player.health;
         player.update(background.x);
+        Log.i("backgroundx", String.valueOf(background.x));
         if (gt.getGameState() == GameThread.GameState.OVER){
             return;
         }
-
+        updateAI();
         if(!STOPPED) { background.update(); }
         if(!STOPPED){ for (Block block : blocks) { block.update(); } }
-        updateAI();
 
         collisionDetection(); //bullet collision detection
         for (int i = 0; i < numOfBullet; i++) {
@@ -315,7 +322,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 p.setColor(Color.BLACK);
                 p.setAlpha(255);
                 p.setTextAlign(Paint.Align.LEFT);
+                p.setFakeBoldText(false);
                 canvas.drawText(scoreText, 10, getHeight()/12+5, p);
+                p.setTextAlign(Paint.Align.RIGHT);
+                canvas.drawText(livesText, getWidth()-10, getHeight()/12+5, p);
 
                 p.setAlpha(200);
                 int buttonrow = getHeight()-buttonSize-10;
@@ -363,6 +373,18 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 canvas.drawText("You Win!", getWidth()/2, getHeight()/2, p);
                 p.setTextSize(getHeight()/12);
                 canvas.drawText(scoreText, getWidth()/2, getHeight()*3/4, p);
+                break;
+            case REVIVE:
+                livesText = "Lives Left: "+player.health;
+                canvas.drawColor(Color.BLACK);
+                p.setTextSize(getHeight()/8);
+                p.setAntiAlias(true);
+                p.setColor(Color.WHITE);
+                p.setTextAlign(Paint.Align.CENTER);
+                p.setFakeBoldText(true);
+                canvas.drawText("You Died!", getWidth()/2, getHeight()/2, p);
+                p.setTextSize(getHeight()/12);
+                canvas.drawText(livesText, getWidth()/2, getHeight()*3/4, p);
                 break;
         }
     }

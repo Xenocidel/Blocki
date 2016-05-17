@@ -11,7 +11,6 @@ import android.util.Log;
  * Created by Aaron on 2016-05-03.
  */
 public class Player extends Block {
-    boolean playerMiddle;
     Bitmap shootRight;
     Bitmap shootLeft;
     Bitmap idleRight;
@@ -23,15 +22,10 @@ public class Player extends Block {
                   int getWidth, int getHeight, Context context, GameView gameView) {
         super(xPos, yPos, xSpeed, ySpeed, gravity, health, getWidth, getHeight,context, gameView);
         type = Type.PLAYER;
-        //health = 1;
-        Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.player_left);
-        idleLeft = Bitmap.createScaledBitmap(tmp, width, height, false);
-        tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.shoot_left);
-        shootLeft = Bitmap.createScaledBitmap(tmp, width, height, false);
-        tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.player_right);
-        idleRight = Bitmap.createScaledBitmap(tmp, width, height, false);
-        tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.shoot_right);
-        shootRight = Bitmap.createScaledBitmap(tmp, width, height, false);
+        idleLeft = gameView.bitmaps.idleLeft;
+        shootLeft = gameView.bitmaps.shootLeft;
+        idleRight = gameView.bitmaps.idleRight;
+        shootRight = gameView.bitmaps.shootRight;
         drawShooting = 0;
         facingRight = true;
     }
@@ -39,6 +33,16 @@ public class Player extends Block {
     @Override
     public void setState(State state) {
         this.state = state;
+    }
+
+    public void loseLife(){
+        --health;
+        if (health <= 0){
+            isAlive = false;
+        }
+        else{
+            gameView.gt.setGameState(GameThread.GameState.REVIVE);
+        }
     }
 
     @Override
@@ -109,7 +113,7 @@ public class Player extends Block {
                     case ENEMY:
                         //for now player dies immediately upon hitting an enemy
                         if (i.isAlive) {
-                            isAlive = false;
+                            loseLife();
                             break blockLoop;
                         }
                         else

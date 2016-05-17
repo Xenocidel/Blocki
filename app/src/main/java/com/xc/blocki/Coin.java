@@ -16,8 +16,7 @@ public class Coin extends Block {
     public Coin(int xPos, int yPos, int getWidth, int getHeight, Context context, GameView gameView){
         this(xPos, yPos, 0, 0, 0, 0, getWidth, getHeight, context, gameView);
         type = Type.ITEM;
-        Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.dogecoin);
-        bitmap =  Bitmap.createScaledBitmap(tmp, width, height, false);
+        bitmap = gameView.bitmaps.coin;
     }
 
     @Override

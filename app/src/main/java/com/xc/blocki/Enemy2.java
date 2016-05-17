@@ -1,29 +1,27 @@
 package com.xc.blocki;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.RectF;
 
 /**
- * Created by Aaron on 2016-05-03.
+ * Created by Aaron on 2016-05-17.
  */
-public class Enemy1 extends Enemy {
-
-    public Enemy1(int xPos, int yPos, int xSpeed, int ySpeed, int gravity, int health,
+public class Enemy2 extends Enemy {
+    public Enemy2(int xPos, int yPos, int xSpeed, int ySpeed, int gravity, int health,
                   int getWidth, int getHeight, Context context, GameView gameView) {
-        super(xPos, yPos, 1, 1, gravity, health, getWidth, getHeight, context, gameView);
-        bitmap = gameView.bitmaps.enemy1;
-        this.health = 2;
-        movingRight = true;
+        super(xPos, yPos, 2, 2, gravity, health, getWidth, getHeight, context, gameView);
+        type = Type.ENEMY;
+        bitmap = gameView.bitmaps.enemy2;
+        this.health = 3;
+        movingRight = false;
     }
 
     public void update(){
         super.update();
         if (health <= 0){
             if (isAlive)
-                gameView.addScore(1);
+                gameView.addScore(2);
             isAlive = false;
         }
     }

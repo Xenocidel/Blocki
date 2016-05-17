@@ -26,11 +26,10 @@ public class Bullet {
     boolean isAlive;
     boolean right;
 
-    public Bullet(Context context, int width, int height, float xPosition, float yPosition) {
-        Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.bullet);
+    public Bullet(GameView gameView, int width, int height, float xPosition, float yPosition) {
         bulletWidth = width/30;
         bulletHeight = bulletWidth;
-        bitmapBullet = Bitmap.createScaledBitmap(tmp, bulletWidth, bulletHeight, false);
+        bitmapBullet = gameView.bitmaps.bullet;
         vx = 15;
         this.width = width;
         this.height = height;

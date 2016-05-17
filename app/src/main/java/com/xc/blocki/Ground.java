@@ -11,19 +11,10 @@ import android.util.Log;
  */
 public class Ground extends Block {
 
-    public Ground(int xPos, int yPos, int xSpeed, int ySpeed, int gravity, int health,
-                  int getWidth, int getHeight, Context context) {
-        super(xPos, yPos, xSpeed, ySpeed, gravity, health, getWidth, getHeight, context);
-        type = Type.GROUND;
-        Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.ground);
-        bitmap =  Bitmap.createScaledBitmap(tmp, getHeight/10, getHeight/10, false);
-    }
-
-    public Ground(int xPos, int yPos, int getWidth, int getHeight, Context context){
+    public Ground(int xPos, int yPos, int getWidth, int getHeight, Context context, GameView gameView){
         super(xPos, yPos, 0, 0, 0, 0, getWidth, getHeight, context);
         type = Type.GROUND;
-        Bitmap tmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.ground);
-        bitmap =  Bitmap.createScaledBitmap(tmp, width, height, false);
+        bitmap = gameView.bitmaps.ground;
         Log.i("Ground", hitbox.toShortString());
     }
 
