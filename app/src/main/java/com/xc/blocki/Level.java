@@ -20,9 +20,9 @@ public class Level {
         switch(level){
             case 1:
                 return  "                         g\n"+
-                        "                         g\n"+
-                        " p              1        g\n"+
-                        "gg     gg  gg   ggg      g\n"+
+                        " p                       g\n"+
+                        "gg              1        g\n"+
+                        "gg gggggg  gg   ggg      g\n"+
                         "gg       1  1     c    f g\n"+
                         "gggggggggggggggggggggggggg\n";
 

@@ -79,6 +79,10 @@ public class Player extends Block {
         if(x >= getWidth/4 && backgroundX == 0) {
             gameView.STOPPED = false;
         }
+        if(x >= getWidth/4 && onGround && (backgroundX > -(gameView.endX-gameView.getWidth()))){
+            gameView.STOPPED = false;
+        }
+
         if (!onGround) {
             y += gravity;
         }
