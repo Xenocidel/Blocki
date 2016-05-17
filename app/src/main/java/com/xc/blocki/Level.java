@@ -19,27 +19,27 @@ public class Level {
     public String createLevel(int level){
         switch(level){
             case 1:
-                return  " p                      g\n"+
-                        "gg                      g\n"+
-                        "                        g\n"+
-                        "gg     gg  gg   ggg     g\n"+
-                        "gg       1  1          fg\n"+
-                        "ggggggggggggggggggggggggg\n";
+                return  "                         g\n"+
+                        "                         g\n"+
+                        " p              1        g\n"+
+                        "gg     gg  gg   ggg      g\n"+
+                        "gg       1  1     c    f g\n"+
+                        "gggggggggggggggggggggggggg\n";
 
             case 2:
-                return  "          gg   1                 g\n"+
-                        "     gg                          g\n"+
-                        "                                 g\n"+
-                        "                                 g\n"+
-                        "  p       1     11             f g\n"+
+                return  "                       1         g\n"+
+                        "  p              1 1   g         g\n"+
+                        "ggg  c 1    1 1 cggggggggggggg   g\n"+
+                        "g    gggggggggg                  g\n"+
+                        "gc1       1 c   1           1  f g\n"+
                         "gggggggggggggggggggggggggggggggggg\n";
 
             case 3:
                 return  "                                                  \n"+
                         "                                                  \n"+
-                        "                                gg                \n"+
-                        "g                  1           ggg                \n"+
-                        "g p   1    1     gggg         gggg   1   1 1  1 1 \n"+
+                        "                                                  \n"+
+                        "g                                                 \n"+
+                        "g p         c                        1   1 1  1 f \n"+
                         "gggggggggggggggggggggggggggggggggggggggggggggggggg\n";
         }
         return null;
@@ -70,13 +70,21 @@ public class Level {
                     x++;
                     break;
                 case 'p':
-                    gameView.player = new Player(x*BLOCK_WIDTH, y*BLOCK_HEIGHT, 10, 10, 10, 1, gameView.getWidth(), gameView.getHeight(), gameView.context, gameView);
-                    //todo: instead of creating a new player, implement a "move player" to avoid null pointers
+                    if (gameView.player == null)
+                        gameView.player = new Player(x*BLOCK_WIDTH, y*BLOCK_HEIGHT, 10, 10, 10, 1, gameView.getWidth(), gameView.getHeight(), gameView.context, gameView);
+                    else {
+                        gameView.player.setX(x * BLOCK_WIDTH);
+                        gameView.player.setY(y*BLOCK_HEIGHT);
+                    }
                     x++;
                     break;
                 case '1':
                     gameView.addBlock(new Enemy1(x*BLOCK_WIDTH, y*BLOCK_HEIGHT, 1, 1, 10, 1,
                             gameView.getWidth(), gameView.getHeight(), gameView.context, gameView));
+                    x++;
+                    break;
+                case 'c':
+                    gameView.addBlock(new Coin(x*BLOCK_WIDTH, y*BLOCK_HEIGHT, gameView.getWidth(), gameView.getHeight(), gameView.context, gameView));
                     x++;
                     break;
             }

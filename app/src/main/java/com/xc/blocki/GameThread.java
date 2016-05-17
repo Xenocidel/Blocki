@@ -1,6 +1,8 @@
 package com.xc.blocki;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -12,7 +14,7 @@ public class GameThread extends Thread {
     GameView gv;
     int level;
     private GameState gameState;
-    public enum GameState{LOADING, RUNNING, OVER};
+    public enum GameState{INIT, LOADING, RUNNING, OVER, ENDGAME};
 
     public GameThread(GameView gv) {
         this.gv=gv;
@@ -23,15 +25,28 @@ public class GameThread extends Thread {
     public void run() {
         SurfaceHolder sh = gv.getHolder();
         Canvas c;
-        gameState = GameState.LOADING;
+        gameState = GameState.INIT;
         while( !Thread.interrupted() ) {
-            if (!gameLoaded){
-                gv.loadGame(level);
-                gameLoaded = true;
-            }
             switch(gameState){
+                case INIT:
+                    c = sh.lockCanvas(null);
+                    gv.draw(c);
+                    sh.unlockCanvasAndPost(c);
+                    gv.loadGame(1);
+                    gameLoaded = true;
+                    setGameState(GameState.RUNNING);
+                    break;
                 case LOADING:
-                    gameState = GameState.RUNNING;
+                    if (level > 3){
+                        setGameState(GameState.ENDGAME);
+                        break;
+                    }
+                    c = sh.lockCanvas(null);
+                    gv.draw(c);
+                    sh.unlockCanvasAndPost(c);
+                    gv.loadGame(level);
+                    gameLoaded = true;
+                    setGameState(GameState.RUNNING);
                     break;
                 case RUNNING:
                     c = sh.lockCanvas(null);
@@ -54,6 +69,7 @@ public class GameThread extends Thread {
                         return;
                     }
                     break;
+                case ENDGAME:
                 case OVER:
                     c = sh.lockCanvas(null);
                     try {

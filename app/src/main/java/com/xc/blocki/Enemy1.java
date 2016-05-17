@@ -48,6 +48,17 @@ public class Enemy1 extends Block {
         else{
             x -= speedX;
         }
+        boolean onGround = false;
+        RectF tmp = new RectF(x, y+gravity, x+width, y+gravity+height);
+        for (Block i : gameView.blocks){
+            if (RectF.intersects(tmp, i.hitbox) && i.type == Type.GROUND) {
+                onGround = true;
+            }
+        }
+        if (!onGround) {
+            y += gravity;
+        }
+        hitbox.set(x, y, x+width, y+height);
     }
 
     @Override

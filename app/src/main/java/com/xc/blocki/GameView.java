@@ -57,7 +57,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     ArrayList<Block> blocks; //contains all blocks except player
     ArrayList<Enemy1> enemies; //contains all enemies
     int maxNumOfBullet = 10; // you can set the maximum number of bullets
-    Bullet[] bullet = new Bullet[maxNumOfBullet];
+    Bullet[] bullet;
     int numOfBullet = 0;
     Bitmap leftarrow;
     Bitmap rightarrow;
@@ -74,26 +74,35 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void loadGame(int gameLevel){
+        //clear all fields
         blocks.clear();
         enemies.clear();
-        player = null;
-        bullet = null;
-        bullet = new Bullet[maxNumOfBullet];
-        numOfBullet = 0;
-        level = new Level(this);
-        level.loadLevel(gameLevel);
-        for (Block i : blocks){
-            if (i instanceof Enemy1){
-                enemies.add((Enemy1)i);
+        if (bullet == null) {
+            bullet = new Bullet[maxNumOfBullet];
+        }
+        else{
+            for (int i=0; i < bullet.length; i++){
+                bullet[i] = null;
             }
         }
+        numOfBullet = 0;
+        System.gc();    //call garbage collection to free any unnecessary objects
+        //create level
+        level = new Level(this);
+        level.loadLevel(gameLevel);
         //bullet creation
         for(int i=0; i<maxNumOfBullet; i++) {
             bullet[numOfBullet] = new Bullet(this.context, getWidth(), getHeight(), player.hitbox.right, player.hitbox.centerY());
             numOfBullet++;
         }
+        for (Block i : blocks){
+            if (i instanceof Enemy1){
+                enemies.add((Enemy1)i);
+            }
+        }
         background = new Background(getWidth(), getHeight(),context, this);
         loadTouchHandler();
+        gt.setGameState(GameThread.GameState.RUNNING);
     }
 
     public void loadTouchHandler(){
@@ -106,7 +115,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                     if (event.getX(i) > getWidth()/2) {
                         if (event.getActionMasked() == MotionEvent.ACTION_DOWN || event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
                             for (int x = 0; x < maxNumOfBullet; x++) {
-                                if (!bullet[x].isShooting && bullet[x].getX() < getWidth() && bullet[x].getX() > 0) { //prevent bug with bullet being launched from offscreen
+                                if (bullet[x]!=null && !bullet[x].isShooting && bullet[x].getX() < getWidth() && bullet[x].getX() > 0) { //prevent bug with bullet being launched from offscreen
                                     bullet[x].setShooting(true, player.facingRight);
                                     Log.i("Bullet", bullet[x].getX() + "," + bullet[x].getY());
                                     player.drawShooting = 5; //draw 5 frames of player shooting image
@@ -244,7 +253,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public void updateAI(){
         for (Enemy1 i : enemies){
             for (Block j : blocks){
-                if (RectF.intersects(i.hitbox, j.hitbox) && i != j && i.isAlive && j.isAlive){
+                if (RectF.intersects(i.hitbox, j.hitbox) && i != j && j.type != Block.Type.ITEM && i.isAlive && j.isAlive){
                     if (i.movingRight){
                         i.x -= i.speedX;
                     }
@@ -287,9 +296,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        update();
         switch(gt.getGameState()){
             case RUNNING:
+                update();
                 background.draw(canvas);
 
                 //canvas.drawRect(player.hitbox, p); //for debug
@@ -316,7 +325,22 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 canvas.drawBitmap(shoot, getWidth()-buttonSize-10, buttonrow, p);
 
                 break;
+            case INIT:
+                p.setTextSize(getHeight()/6);
+                p.setAntiAlias(true);
+                p.setColor(Color.WHITE);
+                p.setTextAlign(Paint.Align.CENTER);
+                p.setAlpha(255);
+                canvas.drawText("Loading Level "+gt.level, getWidth()/2, getHeight()/2, p);
+                Log.d("draw", "init");
+                break;
             case LOADING:
+                p.setTextSize(getHeight()/6);
+                p.setAntiAlias(true);
+                p.setColor(Color.WHITE);
+                p.setTextAlign(Paint.Align.CENTER);
+                p.setAlpha(255);
+                canvas.drawText("Loading Level "+gt.level, getWidth()/2, getHeight()/2, p);
                 break;
             case OVER:
                 canvas.drawColor(Color.BLACK);
@@ -326,6 +350,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 p.setTextAlign(Paint.Align.CENTER);
                 p.setFakeBoldText(true);
                 canvas.drawText("Game Over!", getWidth()/2, getHeight()/2, p);
+                p.setTextSize(getHeight()/12);
+                canvas.drawText(scoreText, getWidth()/2, getHeight()*3/4, p);
+                break;
+            case ENDGAME:
+                canvas.drawColor(Color.BLACK);
+                p.setTextSize(getHeight()/8);
+                p.setAntiAlias(true);
+                p.setColor(Color.WHITE);
+                p.setTextAlign(Paint.Align.CENTER);
+                p.setFakeBoldText(true);
+                canvas.drawText("You Win!", getWidth()/2, getHeight()/2, p);
                 p.setTextSize(getHeight()/12);
                 canvas.drawText(scoreText, getWidth()/2, getHeight()*3/4, p);
                 break;

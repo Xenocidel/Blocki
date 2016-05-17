@@ -122,6 +122,10 @@ public class Player extends Block {
                             gameView.gt.level++;
                             break blockLoop;
                         }
+                        if (i instanceof Coin && i.isAlive){
+                            gameView.addScore(5);
+                            i.isAlive = false;
+                        }
                         break;
                 }
             }
@@ -134,6 +138,14 @@ public class Player extends Block {
 
     public float getY(){
         return y;
+    }
+
+    public void setX(int x){
+        this.x = x;
+    }
+
+    public void setY(int y){
+        this.y = y;
     }
 
     @Override
