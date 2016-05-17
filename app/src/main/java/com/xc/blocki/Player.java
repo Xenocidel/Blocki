@@ -36,8 +36,7 @@ public class Player extends Block {
     }
 
     public void loseLife(){
-        --health;
-        if (health <= 0){
+        if (--health <= 0){
             isAlive = false;
         }
         else{

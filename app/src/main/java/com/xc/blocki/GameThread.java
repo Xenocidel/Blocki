@@ -84,8 +84,13 @@ public class GameThread extends Thread {
                         }
                     }
                     try {
-                        Thread.sleep(900);
-                        setGameState(GameThread.GameState.LOADING);
+                        if (getGameState() == GameState.REVIVE) {
+                            Thread.sleep(900);
+                            setGameState(GameThread.GameState.LOADING);
+                        }
+                        else{
+                            Thread.sleep(100);
+                        }
                     } catch (InterruptedException e) {
                         // Thread was interrupted while sleeping.
                         return;

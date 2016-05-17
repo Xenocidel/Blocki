@@ -259,7 +259,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public void updateAI(){
         for (Enemy i : enemies){
             for (Block j : blocks){
-                if (RectF.intersects(i.hitbox, j.hitbox) && i != j && j.type != Block.Type.ITEM && i.isAlive && j.isAlive){
+                if (RectF.intersects(i.hitbox, j.hitbox) && i != j && j.type == Block.Type.GROUND && i.isAlive && j.isAlive){
                     if (i.movingRight){
                         i.x -= i.speedX;
                     }
