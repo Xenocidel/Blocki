@@ -35,11 +35,11 @@ public class Level {
                         "gggggggggggggggggggggggggggggggggg\n";
 
             case 3:
-                return  "                                                  \n"+
-                        "                                                  \n"+
-                        "                                                  \n"+
-                        "g                                                 \n"+
-                        "g p         c                        1   1 1  1 f \n"+
+                return  " p               1      2 g      2   g           g\n"+
+                        "gg    2 c       gggg   gggg   gggggggg           g\n"+
+                        "g   ggg   2   c   1     c                        g\n"+
+                        "g      gggggg  ggggggggggg c                     g\n"+
+                        "gc   2     c      2    1    2        1    c    f g\n"+
                         "gggggggggggggggggggggggggggggggggggggggggggggggggg\n";
         }
         return null;
