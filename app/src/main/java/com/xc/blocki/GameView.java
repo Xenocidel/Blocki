@@ -49,6 +49,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     GameThread gt;
     Bitmaps bitmaps;
     int score=0;
+    int levelScore = 0;
     String scoreText;
     String livesText;
     Level level;
@@ -223,6 +224,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     public void addScore(int score){
         this.score+=score;
+        this.levelScore+=score;
     }
 
     public void collisionDetection(){
@@ -345,6 +347,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 Log.d("draw", "init");
                 break;
             case LOADING:
+                levelScore=0;
                 p.setTextSize(getHeight()/6);
                 p.setAntiAlias(true);
                 p.setColor(Color.WHITE);
@@ -375,6 +378,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 canvas.drawText(scoreText, getWidth()/2, getHeight()*3/4, p);
                 break;
             case REVIVE:
+                score -= levelScore;
                 livesText = "Lives Left: "+player.health;
                 canvas.drawColor(Color.BLACK);
                 p.setTextSize(getHeight()/8);
