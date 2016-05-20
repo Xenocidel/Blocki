@@ -13,7 +13,7 @@ Press Play to start the first level.
 Your player (blue box with gun) can only move left and right, and can shoot bullets.
 Control the player by touching the on-screen buttons. You can move and shoot at the same time.
 Your objective is to shoot all enemies (red boxes) and reach the finish line.
-Your player only has one life, so don't run into any enemies!
+Your player only has two lives, so don't run into any enemies!
 
 Game Features
 
